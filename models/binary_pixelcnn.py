@@ -25,8 +25,8 @@ class BinaryPixelCNN(object):
         self.kernel_regularizer = kernel_regularizer
         self.is_training = is_training
 
-        self.outputs = self.__model(inputs, nr_filters, filter_size, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training)
-        self.loss = self.__loss()
+        self.outputs = self._model(inputs, nr_filters, filter_size, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training)
+        self.loss = self._loss(self.outputs)
 
     def _model(self, nr_resnet, nr_filters, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training):
         with arg_scope([gated_resnet], nonlinearity=nonlinearity, dropout_p=dropout_p, counters=self.counters):

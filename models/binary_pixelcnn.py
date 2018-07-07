@@ -50,4 +50,4 @@ class BinaryPixelCNN(object):
                 return x_out
 
     def _loss(self, outputs):
-        return outputs
+        return tf.reduce_sum(outputs)

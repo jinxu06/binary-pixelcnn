@@ -39,6 +39,27 @@ for i in range(args.nr_gpu):
     with tf.device('/gpu:%d' % i):
         model(models[i], xs[i], is_trainings[i], dropout_ps[i], **model_opt)
 
+if True:
+    all_params = tf.trainable_variables() #get_trainable_variables(["conv_encoder", "conv_decoder", "conv_pixel_cnn"])
+    grads = []
+    for i in range(args.nr_gpu):
+        with tf.device('/gpu:%d' % i):
+            grads.append(tf.gradients(models[i].loss, all_params, colocate_gradients_with_ops=True))
+    with tf.device('/gpu:0'):
+        for i in range(1, args.nr_gpu):
+            for j in range(len(grads[0])):
+                grads[0][j] += grads[i][j]
+
+        train_step = adam_updates(all_params, grads[0], lr=args.learning_rate)
+
+def make_feed_dict(data, is_training=True, dropout_p=0.5):
+    ds = np.split(data, args.nr_gpu)
+    feed_dict = {is_trainings[i]: is_training for i in range(args.nr_gpu)}
+    feed_dict.update({dropout_ps[i]: dropout_p for i in range(args.nr_gpu)})
+    feed_dict.update({ xs[i]:ds[i] for i in range(args.nr_gpu) })
+    return feed_dict
+
+
 initializer = tf.global_variables_initializer()
 saver = tf.train.Saver()
 
@@ -47,3 +68,6 @@ config.gpu_options.allow_growth = True
 with tf.Session(config=config) as sess:
 
     sess.run(initializer)
+    data = next(train_set)
+    feed_dict = make_feed_dict(broadcast_masks_tf)
+    sess.run(train_step, feed_dict=feed_dict)

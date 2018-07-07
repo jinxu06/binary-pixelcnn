@@ -42,10 +42,10 @@ class BinaryPixelCNN(object):
                     u_list.append(gated_resnet(u_list[-1], conv=down_shifted_conv2d))
                     ul_list.append(gated_resnet(ul_list[-1], u_list[-1], conv=down_right_shifted_conv2d))
                     receptive_field = (receptive_field[0]+1, receptive_field[1]+2)
-                x_out = nin(tf.nn.elu(ul_list[-1]), 1)
+                x_out = nin(tf.nn.elu(ul_list[-1]), 1, nonlinearity=None)
                 print("    * receptive_field", receptive_field)
                 return x_out
 
     def _loss(self, x, outputs):
-        l, self.test =  bernoulli_loss(x, outputs)
+        l =  bernoulli_loss(x, outputs)
         return l

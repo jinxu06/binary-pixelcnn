@@ -13,7 +13,8 @@ from models.binary_pixelcnn import BinaryPixelCNN
 parser = argparse.ArgumentParser()
 parser.add_argument('-is', '--img_size', type=int, default=28, help="size of input image")
 parser.add_argument('-bs', '--batch_size', type=int, default=100, help='Batch size during training per GPU')
-parser.add_argument('-ng', '--nr_gpu', type=int, default=0, help='How many GPUs to distribute the training across?')
+parser.add_argument('-ng', '--nr_gpu', type=int, default=1, help='How many GPUs to distribute the training across?')
+parser.add_argument('-lr', '--learning_rate', type=float, default=0.001, help='Base learning rate')
 args = parser.parse_args()
 
 datasets = mnist.load(data_dir="~/scikit_learn_data", num_classes=5, batch_size=args.batch_size, split=[5./7, 1./7, 1./7])

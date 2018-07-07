@@ -28,8 +28,8 @@ models = [BinaryPixelCNN(counters={}) for i in range(args.nr_gpu)]
 model_opt = {
     "nr_resnet": 1,
     "nr_filters": 50,
-    "nonlinearity": tf.nn.relu,
-    "bn": False,
+    "nonlinearity": tf.nn.elu,
+    "bn": True,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(),
     "kernel_regularizer":None,
 }

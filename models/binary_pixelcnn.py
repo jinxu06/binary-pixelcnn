@@ -47,4 +47,5 @@ class BinaryPixelCNN(object):
                 return x_out
 
     def _loss(self, x, outputs):
-        return bernoulli_loss(x, outputs)
+        l, self.test =  bernoulli_loss(x, outputs)
+        return l

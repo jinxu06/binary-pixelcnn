@@ -19,7 +19,7 @@ class BinaryPixelCNN(object):
         self.inputs = inputs
         self.nr_filters = nr_filters
         self.nonlinearity = nonlinearity
-        self.dropout_p = self.dropout_p
+        self.dropout_p = dropout_p
         self.bn = bn
         self.kernel_initializer = kernel_initializer
         self.kernel_regularizer = kernel_regularizer

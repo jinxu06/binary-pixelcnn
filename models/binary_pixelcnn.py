@@ -16,8 +16,6 @@ class BinaryPixelCNN(object):
         self.counters = counters
 
     def construct(self, inputs, is_training, dropout_p, nr_resnet=1, nr_filters=50, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
-        self.counters = counters
-
         self.inputs = inputs
         self.nr_filters = nr_filters
         self.filter_size = filter_size

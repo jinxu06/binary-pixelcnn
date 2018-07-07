@@ -81,7 +81,7 @@ with tf.Session(config=config) as sess:
             sess.run(train_step, feed_dict=feed_dict)
 
         ls = []
-        for data in val_data:
+        for data in val_set:
             data = data[0][:, :, :, None]
             feed_dict = make_feed_dict(data, is_training=False, dropout_p=0.)
             l = sess.run(models[0].loss, feed_dict=feed_dict)

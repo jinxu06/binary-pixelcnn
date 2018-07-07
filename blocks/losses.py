@@ -4,6 +4,18 @@ from tensorflow.contrib.framework.python.ops import arg_scope, add_arg_scope
 from blocks.helpers import log_prob_from_logits, int_shape, get_name, log_sum_exp
 flatten = tf.contrib.layers.flatten
 
+@add_arg_scope
+def bernoulli_loss(x, l, sum_all=True):
+    xs = int_shape(x)
+    ls = int_shape(l)
+
+    lse = tf.nn.sigmoid_cross_entropy_with_logits(labels=l, logits=x)
+    print(int_shape(lse))
+
+    if sum_all:
+        return -tf.reduce_sum(lse)
+    else:
+        return -tf.reduce_sum(lse,[1,2])
 
 @add_arg_scope
 def gaussian_recons_loss(x, x_hat, output_mean=True):

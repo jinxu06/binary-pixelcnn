@@ -70,5 +70,5 @@ with tf.Session(config=config) as sess:
 
     sess.run(initializer)
     data = next(train_set)
-    feed_dict = make_feed_dict(broadcast_masks_tf)
+    feed_dict = make_feed_dict(data)
     sess.run(train_step, feed_dict=feed_dict)

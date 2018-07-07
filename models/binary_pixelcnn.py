@@ -18,7 +18,6 @@ class BinaryPixelCNN(object):
     def construct(self, inputs, is_training, dropout_p, nr_resnet=1, nr_filters=50, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
         self.inputs = inputs
         self.nr_filters = nr_filters
-        self.filter_size = filter_size
         self.nonlinearity = nonlinearity
         self.dropout_p = self.dropout_p
         self.bn = bn
@@ -29,7 +28,7 @@ class BinaryPixelCNN(object):
         self.outputs = self.__model(inputs, nr_filters, filter_size, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training)
         self.loss = self.__loss()
 
-    def _model(self, nr_filters, filter_size, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training):
+    def _model(self, nr_resnet, nr_filters, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training):
         with arg_scope([gated_resnet], nonlinearity=nonlinearity, dropout_p=dropout_p, counters=self.counters):
             with arg_scope([gated_resnet, down_shifted_conv2d, down_right_shifted_conv2d], bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
                 xs = int_shape(x)

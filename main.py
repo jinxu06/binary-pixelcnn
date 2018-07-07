@@ -5,7 +5,7 @@ import argparse
 import time
 import numpy as np
 import tensorflow as tf
-from blocks.helpers import Recorder, visualize_samples, get_nonlinearity, int_shape, get_trainable_variables
+from blocks.helpers import visualize_samples, get_nonlinearity, int_shape, get_trainable_variables
 from blocks.optimizers import adam_updates
 import data.mnist as mnist
 from models.binary_pixelcnn import BinaryPixelCNN
@@ -33,7 +33,7 @@ model_opt = {
     "kernel_regularizer":None,
 }
 
-model = tf.make_template('model', ConvPixelVAE.construct)
+model = tf.make_template('model', BinaryPixelCNN.construct)
 
 for i in range(args.nr_gpu):
     with tf.device('/gpu:%d' % i):

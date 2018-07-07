@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from data.dataset import Dataset
-import libs.helpers as helpers
+import blocks.helpers as helpers
 
 
 def load(data_dir, num_classes, batch_size, split=[5./7, 1./7, 1./7], one_hot=True, return_meta=False):

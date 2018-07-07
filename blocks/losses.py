@@ -9,7 +9,7 @@ def bernoulli_loss(x, l, sum_all=True):
     xs = int_shape(x)
     ls = int_shape(l)
 
-    lse = tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(labels=l, logits=x), -1)
+    lse = tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(labels=x, logits=l), -1)
 
     if sum_all:
         return tf.reduce_sum(lse)

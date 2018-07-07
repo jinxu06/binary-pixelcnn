@@ -71,6 +71,19 @@ with tf.Session(config=config) as sess:
     sess.run(initializer)
     data = next(train_set)[0][:,:,:,None]
     feed_dict = make_feed_dict(data)
-    for k in range(10):
-        print(k)
-        sess.run([train_step], feed_dict=feed_dict)
+    max_num_epoch = 200
+    for epoch in range(max_num_epoch+1):
+        print(epoch, "........")
+        tt = time.time()
+        for data in train_set:
+            data = data[0][:, :, :, None]
+            feed_dict = make_feed_dict(data, is_training=True, dropout_p=0.5)
+            sess.run(train_step, feed_dict=feed_dict)
+
+        ls = []
+        for data in val_data:
+            data = data[0][:, :, :, None]
+            feed_dict = make_feed_dict(data, is_training=False, dropout_p=0.)
+            l = sess.run(models[0].loss, feed_dict=feed_dict)
+            ls.append(l)
+        print(np.mean(ls))

@@ -12,9 +12,9 @@ def bernoulli_loss(x, l, sum_all=True):
     lse = tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(labels=l, logits=x), -1)
 
     if sum_all:
-        return -tf.reduce_sum(lse)
+        return tf.reduce_sum(lse)
     else:
-        return -tf.reduce_sum(lse,[1,2])
+        return tf.reduce_sum(lse,[1,2])
 
 @add_arg_scope
 def gaussian_recons_loss(x, x_hat, output_mean=True):

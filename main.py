@@ -69,7 +69,8 @@ config.gpu_options.allow_growth = True
 with tf.Session(config=config) as sess:
 
     sess.run(initializer)
-    data = next(train_set)[0]
-    print(data.shape)
+    data = next(train_set)[0][:,:,:,None]
     feed_dict = make_feed_dict(data)
-    sess.run(train_step, feed_dict=feed_dict)
+    for k in range(10):
+        print(k)
+        sess.run([train_step], feed_dict=feed_dict)

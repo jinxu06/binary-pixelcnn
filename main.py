@@ -15,7 +15,17 @@ parser.add_argument('-is', '--img_size', type=int, default=28, help="size of inp
 parser.add_argument('-bs', '--batch_size', type=int, default=100, help='Batch size during training per GPU')
 parser.add_argument('-ng', '--nr_gpu', type=int, default=1, help='How many GPUs to distribute the training across?')
 parser.add_argument('-lr', '--learning_rate', type=float, default=0.001, help='Base learning rate')
+parser.add_argument('-sd', '--save_dir', type=str, default="", help='Location for parameter checkpoints and samples')
+parser.add_argument('-g', '--gpus', type=str, default="", help='GPU No.s')
+parser.add_argument('-s', '--seed', type=int, default=1, help='Random seed to use')
+parser.add_argument('-si', '--save_interval', type=int, default=10, help='Every how many epochs to write checkpoint/samples?')
 args = parser.parse_args()
+
+args.nr_gpu = len(args.gpus.split(","))
+os.environ["CUDA_VISIBLE_DEVICES"] = args.gpus
+print('input args:\n', json.dumps(vars(args), indent=4, separators=(',',':'))) # pretty print args
+if not os.path.exists(args.save_dir) and args.save_dir!="":
+    os.makedirs(args.save_dir)
 
 datasets = mnist.load(data_dir="~/scikit_learn_data", num_classes=5, batch_size=args.batch_size, split=[5./7, 1./7, 1./7])
 train_set, val_set = datasets[0], datasets[1]
@@ -29,7 +39,7 @@ model_opt = {
     "nr_resnet": 2,
     "nr_filters": 20,
     "nonlinearity": tf.nn.elu,
-    "bn": True,
+    "bn": False,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(),
     "kernel_regularizer":None,
 }
@@ -59,6 +69,21 @@ def make_feed_dict(data, is_training=True, dropout_p=0.5):
     feed_dict.update({dropout_ps[i]: dropout_p for i in range(args.nr_gpu)})
     feed_dict.update({ xs[i]:ds[i] for i in range(args.nr_gpu) })
     return feed_dict
+
+def sample_from_model(sess, data):
+    ds = np.split(data, args.nr_gpu)
+    feed_dict = {is_trainings[i]: False for i in range(args.nr_gpu)}
+    feed_dict.update({dropout_ps[i]: 0. for i in range(args.nr_gpu)})
+    feed_dict.update({ xs[i]:ds[i] for i in range(args.nr_gpu) })
+
+    x_gen = [np.zeros_like(ds[i]) for i in range(args.nr_gpu)]
+    for yi in range(args.img_size):
+        for xi in range(args.img_size):
+            feed_dict.update({xs[i]:x_gen[i] for i in range(args.nr_gpu)})
+            x_hat = sess.run([models[i].x_hat for i in range(args.nr_gpu)], feed_dict=feed_dict)
+            for i in range(args.nr_gpu):
+                x_gen[i][:, yi, xi, :] = x_hat[i][:, yi, xi, :]
+    return np.concatenate(x_gen, axis=0)
 
 
 initializer = tf.global_variables_initializer()

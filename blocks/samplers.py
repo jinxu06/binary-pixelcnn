@@ -4,6 +4,12 @@ from tensorflow.contrib.framework.python.ops import arg_scope, add_arg_scope
 from blocks.helpers import int_shape, get_name
 
 @add_arg_scope
+def bernoulli_sampler(params, counters={}):
+    u = tf.random_uniform(params.get_shape(), minval=0., maxval=1.)
+    return tf.cast(u < params, dtype=tf.float32)
+
+
+@add_arg_scope
 def gaussian_sampler(loc, scale, counters={}):
     name = get_name("gaussian_sampler", counters)
     print("construct", name, "...")

@@ -24,7 +24,7 @@ def deconv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlin
     return outputs
 
 @add_arg_scope
-def dense(inputs, num_outputs, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False):
+def dense(inputs, num_outputs, nonlinearity=None, bn=False, kernel_initializer=None, kernel_regularizer=None, is_training=False):
     inputs_shape = int_shape(inputs)
     assert len(inputs_shape)==2, "inputs should be flattened first"
     outputs = tf.layers.dense(inputs, num_outputs, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)

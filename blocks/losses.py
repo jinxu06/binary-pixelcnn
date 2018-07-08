@@ -11,7 +11,7 @@ def bernoulli_loss(x, l, sum_all=True):
     lse = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=x, logits=l), 3)
 
     if sum_all:
-        return tf.reduce_sum(lse), lse
+        return tf.reduce_sum(lse), x, l, lse
     else:
         return tf.reduce_sum(lse,[1,2])
 

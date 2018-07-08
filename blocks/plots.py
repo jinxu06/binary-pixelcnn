@@ -1,10 +1,10 @@
-import numpy as np 
+import numpy as np
 from PIL import Image
 
 def tile_images(imgs, size=(6, 6)):
     imgs = imgs[:size[0]*size[1], :, :, :]
     if imgs.shape[-1] == 1:
-        imgs = np.stack([imgs.copy() for k in range(3)], axis=-1)
+        imgs = np.stack([imgs.copy()[:,:,:,0] for k in range(3)])
     img_h, img_w = imgs.shape[1], imgs.shape[2]
     all_images = np.zeros((img_h*size[0], img_w*size[1], 3), np.uint8)
     for j in range(size[0]):

@@ -9,7 +9,7 @@ from blocks.helpers import visualize_samples, get_nonlinearity, int_shape, get_t
 from blocks.optimizers import adam_updates
 import data.mnist as mnist
 from models.binary_pixelcnn import BinaryPixelCNN
-from plots import visualize_samples
+from blocks.plots import visualize_samples
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-is', '--img_size', type=int, default=28, help="size of input image")

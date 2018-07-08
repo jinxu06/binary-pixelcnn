@@ -18,7 +18,7 @@ parser.add_argument('-lr', '--learning_rate', type=float, default=0.001, help='B
 parser.add_argument('-sd', '--save_dir', type=str, default="", help='Location for parameter checkpoints and samples')
 parser.add_argument('-g', '--gpus', type=str, default="", help='GPU No.s')
 parser.add_argument('-s', '--seed', type=int, default=1, help='Random seed to use')
-parser.add_argument('-si', '--save_interval', type=int, default=10, help='Every how many epochs to write checkpoint/samples?')
+parser.add_argument('-si', '--save_interval', type=int, default=5, help='Every how many epochs to write checkpoint/samples?')
 args = parser.parse_args()
 
 args.nr_gpu = len(args.gpus.split(","))
@@ -112,3 +112,8 @@ with tf.Session(config=config) as sess:
             l = sess.run(models[0].loss, feed_dict=feed_dict)
             ls.append(l)
         print(np.mean(ls))
+
+        if epoch % args.save_interval:
+            samples = sample_from_model(sess, data)
+            print(samples)
+            print(samples.shape)

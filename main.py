@@ -66,7 +66,6 @@ if True:
 
 def make_feed_dict(data, is_training=True, dropout_p=0.5):
     data[data>0.] = 1.
-    print(data.min(), data.max())
     ds = np.split(data, args.nr_gpu)
     feed_dict = {is_trainings[i]: is_training for i in range(args.nr_gpu)}
     feed_dict.update({dropout_ps[i]: dropout_p for i in range(args.nr_gpu)})
@@ -74,6 +73,7 @@ def make_feed_dict(data, is_training=True, dropout_p=0.5):
     return feed_dict
 
 def sample_from_model(sess, data):
+    data[data>0.] = 1.
     ds = np.split(data, args.nr_gpu)
     feed_dict = {is_trainings[i]: False for i in range(args.nr_gpu)}
     feed_dict.update({dropout_ps[i]: 0. for i in range(args.nr_gpu)})
@@ -118,4 +118,5 @@ with tf.Session(config=config) as sess:
 
         if epoch % args.save_interval==0:
             samples = sample_from_model(sess, data)
+            visualize_samples(data, name="results/gt-{0}.png".format(epoch))
             visualize_samples(samples, name="results/samples-{0}.png".format(epoch))

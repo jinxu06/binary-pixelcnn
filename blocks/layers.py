@@ -55,7 +55,9 @@ def left_shift(x):
 
 @add_arg_scope
 def down_shifted_conv2d(x, num_filters, filter_size=[2,3], strides=[1,1], **kwargs):
+    print("...", int_shape(x))
     x = tf.pad(x, [[0,0],[filter_size[0]-1,0], [int((filter_size[1]-1)/2),int((filter_size[1]-1)/2)],[0,0]])
+    print("...", int_shape(x))
     return conv2d(x, num_filters, kernel_size=filter_size, strides=strides, padding='VALID', **kwargs)
 
 @add_arg_scope

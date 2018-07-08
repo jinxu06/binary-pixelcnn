@@ -89,7 +89,6 @@ class BinaryPixelCNN(object):
                         ul_list[-1], u_list[-1], conv=down_right_shifted_conv2d))
 
                 # /////// down pass ////////
-                print("down pass....")
 
                 u = u_list.pop()
                 ul = ul_list.pop()
@@ -99,22 +98,16 @@ class BinaryPixelCNN(object):
                     ul = gated_resnet(ul, tf.concat(
                         [u, ul_list.pop()], 3), conv=down_right_shifted_conv2d)
 
-                print("1")
-
                 u = down_shifted_deconv2d(
                     u, num_filters=nr_filters, strides=[2, 2])
                 ul = down_right_shifted_deconv2d(
                     ul, num_filters=nr_filters, strides=[2, 2])
-
-                print("2")
 
                 for rep in range(nr_resnet + 1):
                     u = gated_resnet(
                         u, u_list.pop(), conv=down_shifted_conv2d)
                     ul = gated_resnet(ul, tf.concat(
                         [u, ul_list.pop()], 3), conv=down_right_shifted_conv2d)
-
-                print("3")
 
                 u = down_shifted_deconv2d(
                     u, num_filters=nr_filters, strides=[2, 2])

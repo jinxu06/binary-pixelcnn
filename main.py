@@ -28,7 +28,7 @@ print('input args:\n', json.dumps(vars(args), indent=4, separators=(',',':'))) #
 if not os.path.exists(args.save_dir) and args.save_dir!="":
     os.makedirs(args.save_dir)
 
-datasets = mnist.load(data_dir="~/scikit_learn_data", num_classes=5, batch_size=args.batch_size, split=[5./7, 1./7, 1./7])
+datasets = mnist.load(data_dir="~/scikit_learn_data", num_classes=10, batch_size=args.batch_size * args.nr_gpu, split=[5./7, 1./7, 1./7])
 train_set, val_set = datasets[0], datasets[1]
 
 xs = [tf.placeholder(tf.float32, shape=(args.batch_size, args.img_size, args.img_size, 1)) for i in range(args.nr_gpu)]

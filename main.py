@@ -37,8 +37,8 @@ dropout_ps = [tf.placeholder(tf.float32, shape=()) for i in range(args.nr_gpu)]
 
 models = [BinaryPixelCNN(counters={}) for i in range(args.nr_gpu)]
 model_opt = {
-    "nr_resnet": 3,
-    "nr_filters": 50,
+    "nr_resnet": 6,
+    "nr_filters": 20,
     "nonlinearity": tf.nn.elu,
     "bn": False,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(),
@@ -65,7 +65,7 @@ if True:
         train_step = adam_updates(all_params, grads[0], lr=args.learning_rate)
 
 def make_feed_dict(data, is_training=True, dropout_p=0.5):
-    data[data>0.] = 1.
+    data = np.rint(data)
     ds = np.split(data, args.nr_gpu)
     feed_dict = {is_trainings[i]: is_training for i in range(args.nr_gpu)}
     feed_dict.update({dropout_ps[i]: dropout_p for i in range(args.nr_gpu)})
@@ -73,7 +73,7 @@ def make_feed_dict(data, is_training=True, dropout_p=0.5):
     return feed_dict
 
 def sample_from_model(sess, data):
-    data[data>0.] = 1.
+    data = np.rint(data)
     ds = np.split(data, args.nr_gpu)
     feed_dict = {is_trainings[i]: False for i in range(args.nr_gpu)}
     feed_dict.update({dropout_ps[i]: 0. for i in range(args.nr_gpu)})
@@ -112,8 +112,8 @@ with tf.Session(config=config) as sess:
         for data in val_set:
             data = data[0][:, :, :, None]
             feed_dict = make_feed_dict(data, is_training=False, dropout_p=0.)
-            l = sess.run(models[0].loss, feed_dict=feed_dict)
-            ls.append(l)
+            l = sess.run([models[i].loss for i in range(args.nr_gpu)], feed_dict=feed_dict)
+            ls.append(np.mean(l))
         print(np.mean(ls))
 
         if epoch % args.save_interval==0:

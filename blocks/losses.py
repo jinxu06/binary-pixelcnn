@@ -8,7 +8,8 @@ flatten = tf.contrib.layers.flatten
 def bernoulli_loss(x, l, sum_all=True):
     xs = int_shape(x)
     ls = int_shape(l)
-    lse = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=x, logits=l), 3)
+    #lse = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=x, logits=l), 3)
+    lse =  - tf.multiply(x, z) + tf.log(1 + tf.exp(-x))
     if sum_all:
         return tf.reduce_sum(lse), lse
     else:

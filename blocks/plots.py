@@ -1,3 +1,4 @@
+import numpy as np 
 from PIL import Image
 
 def tile_images(imgs, size=(6, 6)):

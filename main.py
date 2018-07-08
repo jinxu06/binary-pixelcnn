@@ -26,8 +26,8 @@ dropout_ps = [tf.placeholder(tf.float32, shape=()) for i in range(args.nr_gpu)]
 
 models = [BinaryPixelCNN(counters={}) for i in range(args.nr_gpu)]
 model_opt = {
-    "nr_resnet": 1,
-    "nr_filters": 10,
+    "nr_resnet": 2,
+    "nr_filters": 20,
     "nonlinearity": tf.nn.elu,
     "bn": True,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(),
@@ -85,9 +85,5 @@ with tf.Session(config=config) as sess:
             data = data[0][:, :, :, None]
             feed_dict = make_feed_dict(data, is_training=False, dropout_p=0.)
             l = sess.run(models[0].loss, feed_dict=feed_dict)
-            x1, x2, x3 = sess.run([models[0]._x, models[0]._l, models[0]._lse], feed_dict=feed_dict)
-            print(x1.shape, x1.min(), x1.max())
-            print(x2.shape, x2.min(), x2.max())
-            print(x3.shape, x3.min(), x3.max())
             ls.append(l)
         print(np.mean(ls))

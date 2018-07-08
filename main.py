@@ -74,17 +74,15 @@ with tf.Session(config=config) as sess:
     max_num_epoch = 200
     for epoch in range(max_num_epoch+1):
         print(epoch, "........")
-        # tt = time.time()
-        # for data in train_set:
-        #     data = data[0][:, :, :, None]
-        #     feed_dict = make_feed_dict(data, is_training=True, dropout_p=0.5)
-        #     sess.run(train_step, feed_dict=feed_dict)
+        tt = time.time()
+        for data in train_set:
+            data = data[0][:, :, :, None]
+            feed_dict = make_feed_dict(data, is_training=True, dropout_p=0.5)
+            sess.run(train_step, feed_dict=feed_dict)
 
         ls = []
         for data in val_set:
             data = data[0][:, :, :, None]
-            print(data.min(), data.max())
-            quit()
             feed_dict = make_feed_dict(data, is_training=False, dropout_p=0.)
             l = sess.run(models[0].loss, feed_dict=feed_dict)
             x1, x2, x3 = sess.run([models[0]._x, models[0]._l, models[0]._lse], feed_dict=feed_dict)

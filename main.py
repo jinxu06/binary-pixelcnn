@@ -113,7 +113,6 @@ with tf.Session(config=config) as sess:
             ls.append(l)
         print(np.mean(ls))
 
-        if epoch % args.save_interval:
-            samples = sample_from_model(sess, data)
-            print(samples)
-            print(samples.shape)
+        if epoch % args.save_interval==0:
+            samples = sample_from_model(sess, data)[:, :, :, 0]
+            print(samples.mean())

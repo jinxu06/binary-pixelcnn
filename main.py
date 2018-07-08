@@ -65,6 +65,8 @@ if True:
         train_step = adam_updates(all_params, grads[0], lr=args.learning_rate)
 
 def make_feed_dict(data, is_training=True, dropout_p=0.5):
+    data[data>0.] = 1.
+    print(data.min(), data.max())
     ds = np.split(data, args.nr_gpu)
     feed_dict = {is_trainings[i]: is_training for i in range(args.nr_gpu)}
     feed_dict.update({dropout_ps[i]: dropout_p for i in range(args.nr_gpu)})

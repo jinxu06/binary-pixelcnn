@@ -85,9 +85,9 @@ with tf.Session(config=config) as sess:
             data = data[0][:, :, :, None]
             feed_dict = make_feed_dict(data, is_training=False, dropout_p=0.)
             l = sess.run(models[0].loss, feed_dict=feed_dict)
-            t = sess.run(models[0].test, feed_dict=feed_dict)
-            print(t.shape)
-            print(t.min(), t.max())
-            print("...", np.sum(t))
+            x1, x2, x3 = sess.run([models[0]._x, models[0]._l, models[0]._lse], feed_dict=feed_dict)
+            print(x1)
+            print(x2)
+            print(x3)
             ls.append(l)
         print(np.mean(ls))

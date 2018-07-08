@@ -105,7 +105,7 @@ class BinaryPixelCNN(object):
                 for rep in range(nr_resnet + 1):
                     u = gated_resnet(
                         u, u_list.pop(), conv=down_shifted_conv2d)
-                    ul = nn.gated_resnet(ul, tf.concat(
+                    ul = gated_resnet(ul, tf.concat(
                         [u, ul_list.pop()], 3), conv=down_right_shifted_conv2d)
 
                 u = down_shifted_deconv2d(

@@ -75,6 +75,7 @@ def down_right_shifted_deconv2d(x, num_filters, filter_size=[2,2], strides=[1,1]
     xs = int_shape(x)
     return x[:,:(xs[1]-filter_size[0]+1):,:(xs[2]-filter_size[1]+1),:]
 
+
 @add_arg_scope
 def up_shifted_conv2d(x, num_filters, filter_size=[2,3], strides=[1,1], **kwargs):
     x = tf.pad(x, [[0,0],[0, filter_size[0]-1], [int((filter_size[1]-1)/2),int((filter_size[1]-1)/2)],[0,0]])

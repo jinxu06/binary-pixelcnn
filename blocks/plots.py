@@ -1,4 +1,3 @@
-import matploblib.pyplot as plt
 from PIL import Image
 
 def tile_images(imgs, size=(6, 6)):

@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.contrib.framework.python.ops import arg_scope, add_arg_scope
 from blocks.layers import conv2d, deconv2d, dense, nin, gated_resnet
 from blocks.layers import up_shifted_conv2d, up_left_shifted_conv2d, up_shift, left_shift
-from blocks.layers import down_shifted_conv2d, down_right_shifted_conv2d, down_shift, right_shift
+from blocks.layers import down_shifted_conv2d, down_right_shifted_conv2d, down_shift, right_shift, down_shifted_deconv2d, down_right_shifted_deconv2d
 from blocks.losses import bernoulli_loss
 from blocks.samplers import gaussian_sampler, mix_logistic_sampler, bernoulli_sampler
 from blocks.helpers import int_shape, broadcast_masks_tf

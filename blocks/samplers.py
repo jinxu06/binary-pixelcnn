@@ -6,7 +6,7 @@ from blocks.helpers import int_shape, get_name
 @add_arg_scope
 def bernoulli_sampler(params, counters={}):
     u = tf.random_uniform(params.get_shape(), minval=0., maxval=1.)
-    return tf.cast(u < params, dtype=tf.float32)
+    return tf.cast(u < tf.sigmoid(params), dtype=tf.float32)
 
 
 @add_arg_scope

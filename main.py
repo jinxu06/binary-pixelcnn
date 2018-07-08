@@ -19,7 +19,7 @@ parser.add_argument('-lr', '--learning_rate', type=float, default=0.001, help='B
 parser.add_argument('-sd', '--save_dir', type=str, default="", help='Location for parameter checkpoints and samples')
 parser.add_argument('-g', '--gpus', type=str, default="", help='GPU No.s')
 parser.add_argument('-s', '--seed', type=int, default=1, help='Random seed to use')
-parser.add_argument('-si', '--save_interval', type=int, default=5, help='Every how many epochs to write checkpoint/samples?')
+parser.add_argument('-si', '--save_interval', type=int, default=10, help='Every how many epochs to write checkpoint/samples?')
 args = parser.parse_args()
 
 args.nr_gpu = len(args.gpus.split(","))
@@ -37,8 +37,8 @@ dropout_ps = [tf.placeholder(tf.float32, shape=()) for i in range(args.nr_gpu)]
 
 models = [BinaryPixelCNN(counters={}) for i in range(args.nr_gpu)]
 model_opt = {
-    "nr_resnet": 2,
-    "nr_filters": 20,
+    "nr_resnet": 3,
+    "nr_filters": 50,
     "nonlinearity": tf.nn.elu,
     "bn": False,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(),
@@ -116,4 +116,4 @@ with tf.Session(config=config) as sess:
 
         if epoch % args.save_interval==0:
             samples = sample_from_model(sess, data)
-            visualize_samples(samples)
+            visualize_samples(samples, name="results/samples-{0}.png".format(epoch))

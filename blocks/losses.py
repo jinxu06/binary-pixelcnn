@@ -9,7 +9,10 @@ def bernoulli_loss(x, l, sum_all=True):
     xs = int_shape(x)
     ls = int_shape(l)
     #lse = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=x, logits=l), 3)
-    lse = l - tf.multiply(l, x) + tf.log(1 + tf.exp(-l))
+
+    #lse = l - tf.multiply(l, x) + tf.log(1 + tf.exp(-l))
+    l = tf.sigmoid(l)
+    lse = tf.multiply(x, -tf.log(l)) + tf.multiply(1-x, -tf.log(1-l))
     if sum_all:
         return tf.reduce_sum(lse), lse
     else:

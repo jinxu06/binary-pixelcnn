@@ -37,8 +37,8 @@ dropout_ps = [tf.placeholder(tf.float32, shape=()) for i in range(args.nr_gpu)]
 
 models = [BinaryPixelCNN(counters={}) for i in range(args.nr_gpu)]
 model_opt = {
-    "nr_resnet": 6,
-    "nr_filters": 20,
+    "nr_resnet": 3,
+    "nr_filters": 30,
     "nonlinearity": tf.nn.elu,
     "bn": False,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(),

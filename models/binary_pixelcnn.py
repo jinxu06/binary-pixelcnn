@@ -67,9 +67,9 @@ class BinaryPixelCNN(object):
                         ul_list[-1], u_list[-1], conv=down_right_shifted_conv2d))
 
                 u_list.append(down_shifted_conv2d(
-                    u_list[-1], num_filters=nr_filters, stride=[2, 2]))
+                    u_list[-1], num_filters=nr_filters, strides=[2, 2]))
                 ul_list.append(down_right_shifted_conv2d(
-                    ul_list[-1], num_filters=nr_filters, stride=[2, 2]))
+                    ul_list[-1], num_filters=nr_filters, strides=[2, 2]))
 
                 for rep in range(nr_resnet):
                     u_list.append(gated_resnet(
@@ -78,9 +78,9 @@ class BinaryPixelCNN(object):
                         ul_list[-1], u_list[-1], conv=down_right_shifted_conv2d))
 
                 u_list.append(down_shifted_conv2d(
-                    u_list[-1], num_filters=nr_filters, stride=[2, 2]))
+                    u_list[-1], num_filters=nr_filters, strides=[2, 2]))
                 ul_list.append(down_right_shifted_conv2d(
-                    ul_list[-1], num_filters=nr_filters, stride=[2, 2]))
+                    ul_list[-1], num_filters=nr_filters, strides=[2, 2]))
 
                 for rep in range(nr_resnet):
                     u_list.append(gated_resnet(
@@ -98,9 +98,9 @@ class BinaryPixelCNN(object):
                         [u, ul_list.pop()], 3), conv=down_right_shifted_conv2d)
 
                 u = down_shifted_deconv2d(
-                    u, num_filters=nr_filters, stride=[2, 2])
+                    u, num_filters=nr_filters, strides=[2, 2])
                 ul = down_right_shifted_deconv2d(
-                    ul, num_filters=nr_filters, stride=[2, 2])
+                    ul, num_filters=nr_filters, strides=[2, 2])
 
                 for rep in range(nr_resnet + 1):
                     u = gated_resnet(
@@ -109,9 +109,9 @@ class BinaryPixelCNN(object):
                         [u, ul_list.pop()], 3), conv=down_right_shifted_conv2d)
 
                 u = down_shifted_deconv2d(
-                    u, num_filters=nr_filters, stride=[2, 2])
+                    u, num_filters=nr_filters, strides=[2, 2])
                 ul = down_right_shifted_deconv2d(
-                    ul, num_filters=nr_filters, stride=[2, 2])
+                    ul, num_filters=nr_filters, strides=[2, 2])
 
                 for rep in range(nr_resnet + 1):
                     u = gated_resnet(

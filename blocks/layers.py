@@ -60,9 +60,13 @@ def down_shifted_conv2d(x, num_filters, filter_size=[2,3], strides=[1,1], **kwar
 
 @add_arg_scope
 def down_shifted_deconv2d(x, num_filters, filter_size=[2,3], strides=[1,1], **kwargs):
-    x = deconv2d(x, num_filters, kernel_size=filter_size, strides=strides, padding='SAME', **kwargs)
+    print("down_shifted_deconv2d", int_shape(x))
+    x = deconv2d(x, num_filters, kernel_size=filter_size, strides=strides, padding='VALID', **kwargs)
     xs = int_shape(x)
-    return x[:,:(xs[1]-filter_size[0]+1),int((filter_size[1]-1)/2):(xs[2]-int((filter_size[1]-1)/2)),:]
+    r = x[:,:(xs[1]-filter_size[0]+1),int((filter_size[1]-1)/2):(xs[2]-int((filter_size[1]-1)/2)),:]
+    print(int_shape(r))
+    return r
+
 
 @add_arg_scope
 def down_right_shifted_conv2d(x, num_filters, filter_size=[2,2], strides=[1,1], **kwargs):
@@ -71,9 +75,12 @@ def down_right_shifted_conv2d(x, num_filters, filter_size=[2,2], strides=[1,1], 
 
 @add_arg_scope
 def down_right_shifted_deconv2d(x, num_filters, filter_size=[2,2], strides=[1,1], **kwargs):
-    x = deconv2d(x, num_filters, kernel_size=filter_size, strides=strides, padding='SAME', **kwargs)
+    print("down_right_shifted_deconv2d", int_shape(x))
+    x = deconv2d(x, num_filters, kernel_size=filter_size, strides=strides, padding='VALID', **kwargs)
     xs = int_shape(x)
-    return x[:,:(xs[1]-filter_size[0]+1):,:(xs[2]-filter_size[1]+1),:]
+    r = x[:,:(xs[1]-filter_size[0]+1):,:(xs[2]-filter_size[1]+1),:]
+    print(int_shape(r))
+    return r
 
 
 @add_arg_scope

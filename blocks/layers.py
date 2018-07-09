@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+from tensorflow.python.keras.layers import Input, Conv2D, Conv2DTranspose
 from tensorflow.contrib.framework.python.ops import arg_scope, add_arg_scope
 from blocks.helpers import int_shape, get_name
 
@@ -17,7 +18,7 @@ def conv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlinea
 @add_arg_scope
 def deconv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False):
     # outputs = tf.layers.conv2d_transpose(inputs, num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)
-    outputs = tf.keras.layers.Conv2DTranspose(num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)(inputs)
+    outputs = Conv2DTranspose(num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)(inputs)
     if bn:
         outputs = tf.layers.batch_normalization(outputs, training=is_training)
     if nonlinearity is not None:

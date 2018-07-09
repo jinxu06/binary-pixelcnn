@@ -33,7 +33,8 @@ def deconv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlin
 #def deconv2d(x, num_filters, filter_size=[3,3], stride=[1,1], pad='SAME', nonlinearity=None, init_scale=1., counters={}, init=False, ema=None, **kwargs):
     filter_size = kernel_size
     pad = padding
-    x = inputs 
+    x = inputs
+    stride = strides 
     xs = int_shape(x)
     if pad=='SAME':
         target_shape = [xs[0], xs[1]*stride[0], xs[2]*stride[1], num_filters]

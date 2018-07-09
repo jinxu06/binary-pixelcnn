@@ -16,6 +16,7 @@ def conv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlinea
 @add_arg_scope
 def deconv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False):
     outputs = tf.layers.conv2d_transpose(inputs, num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)
+    print(padding, inputs_shape(inputs), inputs_shape(outputs))
     if bn:
         outputs = tf.layers.batch_normalization(outputs, training=is_training)
     if nonlinearity is not None:
@@ -60,11 +61,9 @@ def down_shifted_conv2d(x, num_filters, filter_size=[2,3], strides=[1,1], **kwar
 
 @add_arg_scope
 def down_shifted_deconv2d(x, num_filters, filter_size=[2,3], strides=[1,1], **kwargs):
-    print("down_shifted_deconv2d", int_shape(x))
     x = deconv2d(x, num_filters, kernel_size=filter_size, strides=strides, padding='VALID', **kwargs)
     xs = int_shape(x)
     r = x[:,:(xs[1]-filter_size[0]+1),int((filter_size[1]-1)/2):(xs[2]-int((filter_size[1]-1)/2)),:]
-    print(int_shape(r))
     return r
 
 

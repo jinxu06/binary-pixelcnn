@@ -55,6 +55,8 @@ def deconv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlin
         x = tf.nn.conv2d_transpose(x, W, target_shape, [1] + stride + [1], padding=pad)
         x = tf.nn.bias_add(x, b)
 
+        outputs = x
+
         if bn:
             outputs = tf.layers.batch_normalization(outputs, training=is_training)
         if nonlinearity is not None:

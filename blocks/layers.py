@@ -4,6 +4,8 @@ from tensorflow.python.keras.layers import Input, Conv2D, Conv2DTranspose
 from tensorflow.contrib.framework.python.ops import arg_scope, add_arg_scope
 from blocks.helpers import int_shape, get_name
 
+counters = {}
+
 @add_arg_scope
 def conv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False):
     outputs = tf.layers.conv2d(inputs, num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)
@@ -36,11 +38,12 @@ def deconv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlin
     x = inputs
     stride = strides
     xs = int_shape(x)
+    name = get_name('deconv2d', counters)
     if pad=='SAME':
         target_shape = [xs[0], xs[1]*stride[0], xs[2]*stride[1], num_filters]
     else:
         target_shape = [xs[0], xs[1]*stride[0] + filter_size[0]-1, xs[2]*stride[1] + filter_size[1]-1, num_filters]
-    with tf.variable_scope("deconv2d"):
+    with tf.variable_scope(name):
         V = tf.get_variable('V', shape=filter_size+[num_filters,int(x.get_shape()[-1])], dtype=tf.float32,
                               initializer=tf.random_normal_initializer(0, 0.05), trainable=True)
         g = tf.get_variable('g', shape=[num_filters], dtype=tf.float32,

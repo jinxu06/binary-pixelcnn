@@ -15,18 +15,50 @@ def conv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlinea
     return outputs
 
 
+# @add_arg_scope
+# def deconv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False):
+#     # outputs = tf.layers.conv2d_transpose(inputs, num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)
+#     conv2dT = Conv2DTranspose(num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)
+#     outputs = conv2dT(inputs)
+#     print(conv2dT.output_shape)
+#     if bn:
+#         outputs = tf.layers.batch_normalization(outputs, training=is_training)
+#     if nonlinearity is not None:
+#         outputs = nonlinearity(outputs)
+#     print("    + deconv2d", int_shape(inputs), int_shape(outputs), nonlinearity, bn)
+#     return outputs
+
 @add_arg_scope
 def deconv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False):
-    # outputs = tf.layers.conv2d_transpose(inputs, num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)
-    conv2dT = Conv2DTranspose(num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)
-    outputs = conv2dT(inputs)
-    print(conv2dT.output_shape)
-    if bn:
-        outputs = tf.layers.batch_normalization(outputs, training=is_training)
-    if nonlinearity is not None:
-        outputs = nonlinearity(outputs)
-    print("    + deconv2d", int_shape(inputs), int_shape(outputs), nonlinearity, bn)
-    return outputs
+#def deconv2d(x, num_filters, filter_size=[3,3], stride=[1,1], pad='SAME', nonlinearity=None, init_scale=1., counters={}, init=False, ema=None, **kwargs):
+    filter_size = kernel_size
+    pad = padding
+    xs = int_shape(x)
+    if pad=='SAME':
+        target_shape = [xs[0], xs[1]*stride[0], xs[2]*stride[1], num_filters]
+    else:
+        target_shape = [xs[0], xs[1]*stride[0] + filter_size[0]-1, xs[2]*stride[1] + filter_size[1]-1, num_filters]
+    with tf.variable_scope("deconv2d"):
+        V = get_variable('V', shape=filter_size+[num_filters,int(x.get_shape()[-1])], dtype=tf.float32,
+                              initializer=tf.random_normal_initializer(0, 0.05), trainable=True)
+        g = get_variable('g', shape=[num_filters], dtype=tf.float32,
+                              initializer=tf.constant_initializer(1.), trainable=True)
+        b = get_variable('b', shape=[num_filters], dtype=tf.float32,
+                              initializer=tf.constant_initializer(0.), trainable=True)
+
+        # use weight normalization (Salimans & Kingma, 2016)
+        W = tf.reshape(g, [1, 1, num_filters, 1]) * tf.nn.l2_normalize(V, [0, 1, 3])
+
+        # calculate convolutional layer output
+        x = tf.nn.conv2d_transpose(x, W, target_shape, [1] + stride + [1], padding=pad)
+        x = tf.nn.bias_add(x, b)
+
+        if bn:
+            outputs = tf.layers.batch_normalization(outputs, training=is_training)
+        if nonlinearity is not None:
+            outputs = nonlinearity(outputs)
+        print("    + deconv2d", int_shape(inputs), int_shape(outputs), nonlinearity, bn)
+        return outputs
 
 @add_arg_scope
 def dense(inputs, num_outputs, nonlinearity=None, bn=False, kernel_initializer=None, kernel_regularizer=None, is_training=False):

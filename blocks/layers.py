@@ -22,7 +22,7 @@ def deconv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlin
     if nonlinearity is not None:
         outputs = nonlinearity(outputs)
     print("    + deconv2d", int_shape(inputs), int_shape(outputs), nonlinearity, bn)
-    return outputs
+    return outputs 
 
 @add_arg_scope
 def dense(inputs, num_outputs, nonlinearity=None, bn=False, kernel_initializer=None, kernel_regularizer=None, is_training=False):

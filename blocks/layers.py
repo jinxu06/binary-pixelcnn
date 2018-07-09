@@ -18,8 +18,9 @@ def conv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlinea
 @add_arg_scope
 def deconv2d(inputs, num_filters, kernel_size, strides=1, padding='SAME', nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False):
     # outputs = tf.layers.conv2d_transpose(inputs, num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)
-    outputs = Conv2DTranspose(num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)(inputs)
-    print(outputs.output_shape)
+    conv2dT = Conv2DTranspose(num_filters, kernel_size=kernel_size, strides=strides, padding=padding, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer)
+    print(conv2dT.compute_output_shape(inputs.shape))
+    outputs = conv2dT(inputs)
     if bn:
         outputs = tf.layers.batch_normalization(outputs, training=is_training)
     if nonlinearity is not None:

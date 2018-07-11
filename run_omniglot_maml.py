@@ -76,7 +76,7 @@ if True:
 
         train_step = adam_updates(all_params, grads[0], lr=args.learning_rate)
 
-mlearner = MetaLearner(session=None, parallel_models=models, optimize_op=train_step, train_set=meta_train_set, eval_set=meta_eval_set, variables=tf.trainable_variables())
+
 
 
 initializer = tf.global_variables_initializer()
@@ -94,7 +94,7 @@ with tf.Session(config=config) as sess:
         print('restoring parameters from', ckpt_file)
         saver.restore(sess, ckpt_file)
 
-    mlearner.session = sess
+    mlearner = MetaLearner(session=sess, parallel_models=models, optimize_op=train_step, train_set=meta_train_set, eval_set=meta_eval_set, variables=tf.trainable_variables())
     v = mlearner.evaluate(num_tasks=10)
     print(v)
     # mlearner.run(num_epoch=args.max_num_epoch, eval_interval=1, save_interval=args.save_interval)

@@ -5,6 +5,7 @@ import argparse
 import time
 import numpy as np
 import tensorflow as tf
+from tensorflow.python import debug as tf_debug
 from blocks.helpers import visualize_samples, get_nonlinearity, int_shape, get_trainable_variables
 from blocks.optimizers import adam_updates
 import data.mnist as mnist
@@ -14,6 +15,7 @@ from data.omniglot import OmniglotDataSource, Omniglot
 from data.dataset import Dataset
 
 parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--debug', help='', action='store_true', default=False)
 parser.add_argument('-is', '--img_size', type=int, default=28, help="size of input image")
 parser.add_argument('-bs', '--batch_size', type=int, default=100, help='Batch size during training per GPU')
 parser.add_argument('-ng', '--nr_gpu', type=int, default=1, help='How many GPUs to distribute the training across?')
@@ -115,6 +117,8 @@ saver = tf.train.Saver()
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 with tf.Session(config=config) as sess:
+    if args.debug:
+        sess = tf.debug.LocalCLIDebugWrapperSession(sess)
 
     sess.run(initializer)
     # data = next(train_set)[0][:,:,:,None]

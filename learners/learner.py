@@ -55,7 +55,7 @@ class Learner(object):
             l = self.session.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
             nats_per_dim = np.mean(l) / np.prod(data.shape[1:3])
         ls.append(nats_per_dim)
-        print(np.mean(ls))
+        return np.mean(ls)
 
     def sample_from_model(self):
         self.eval_set.reset()
@@ -83,9 +83,10 @@ class Learner(object):
             self.train_epoch()
             train_time = self.qclock()
             if epoch % eval_interval == 0:
-                self.evaluate()
+                e = self.evaluate()
             if epoch % save_interval == 0:
                 # saver.save(sess, args.save_dir + '/params_' + args.data_set + '.ckpt')
                 samples = self.sample_from_model()
                 visualize_samples(samples, name="results/samples-{0}.png".format(epoch))
             print("Epoch {0}: {1:%0.3f}s ...................".format(epoch, train_time)
+            print("eval", e)

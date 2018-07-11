@@ -44,19 +44,18 @@ omniglot = Omniglot(source.test_set, inner_batch_size=20)
 test_data, _ = omniglot.sample_mini_dataset(num_classes=1, num_shots=20, test_shots=0)
 
 # train_data, _ = omniglot.sample_mini_dataset(num_classes=1200 * 4, num_shots=20, test_shots=0)
-all_data = []
-for d in test_data:
-    d = d[0]#[:, :, :, None]
-    d = 1 - d
-    all_data.append(d)
-all_data = np.concatenate(all_data, axis=0)
-np.random.shuffle(all_data)
-train_set, val_set = all_data, all_data
+# all_data = []
+# for d in test_data:
+#     d = d[0]#[:, :, :, None]
+#     d = 1 - d
+#     all_data.append(d)
+# all_data = np.concatenate(all_data, axis=0)
+# np.random.shuffle(all_data)
 # train_set, val_set = all_data[:50000], all_data[50000:60000]
 # np.savez("omniglot", train=train_set, val=val_set)
 
-# data = np.load("omniglot.npz")
-# train_set, val_set = data['train'], data['val']
+data = np.load("omniglot.npz")
+train_set, val_set = data['train'], data['val']
 train_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=train_set)
 val_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=val_set)
 

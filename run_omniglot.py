@@ -160,7 +160,7 @@ with tf.Session(config=config) as sess:
             data = data[:, :, :, None]
             feed_dict = make_feed_dict(data, is_training=False, dropout_p=0.)
             l = sess.run([models[i].loss for i in range(args.nr_gpu)], feed_dict=feed_dict)
-            bits_per_dim = np.sum(l) / (args.nr_gpu*np.log(2.)* (args.img_size**2) *args.batch_size)
+            bits_per_dim = np.sum(l) / (args.nr_gpu * (args.img_size**2))
             ls.append(bits_per_dim)
         print(np.mean(ls))
 

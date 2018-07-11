@@ -4,6 +4,8 @@ import sys
 import numpy as np
 import tensorflow as tf
 
+from blocks.helpers import visualize_samples
+
 class Learner(object):
 
     def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None):
@@ -77,11 +79,13 @@ class Learner(object):
 
     def run(self, num_epoch, eval_interval, save_interval):
         for epoch in range(1, num_epoch+1):
+            self.qclock()
             self.train_epoch()
+            train_time = self.qclock()
             if epoch % eval_interval == 0:
                 self.evaluate()
             if epoch % save_interval == 0:
                 # saver.save(sess, args.save_dir + '/params_' + args.data_set + '.ckpt')
                 samples = self.sample_from_model()
                 visualize_samples(samples, name="results/samples-{0}.png".format(epoch))
-            print("Epoch {0}: {1}s ...................".format(epoch, self.qclock()))
+            print("Epoch {0}: {1:%0.3f}s ...................".format(epoch, train_time)

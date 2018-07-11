@@ -68,7 +68,7 @@ for d in test_data:
     all_data.append(d)
 all_data = np.concatenate(all_data, axis=0)
 np.random.shuffle(all_data)
-train_set, val_set = all_data, all_data
+train_set, val_set = all_data[:8], all_data[8:]
 train_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=train_set)
 val_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=val_set)
 
@@ -160,7 +160,8 @@ with tf.Session(config=config) as sess:
             data = data[:, :, :, None]
             feed_dict = make_feed_dict(data, is_training=False, dropout_p=0.)
             l = sess.run([models[i].loss for i in range(args.nr_gpu)], feed_dict=feed_dict)
-            ls.append(np.mean(l))
+            bits_per_dim = np.sum(l) / (args.nr_gpu*np.log(2.)* (args.img_size**2) *args.batch_size)
+            ls.append(bits_per_dim)
         print(np.mean(ls))
 
         if epoch % args.save_interval==0:

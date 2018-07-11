@@ -47,9 +47,13 @@ class Learner(object):
             sess.run(self.optimize_op, feed_dict=feed_dict)
 
     def evaluate(self):
+        ls = []
         for data in self.eval_set:
-            eed_dict = self._make_feed_dict(data, is_training=True, dropout_p=0.5)
-            sess.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
+            eed_dict = self._make_feed_dict(data, is_training=False, dropout_p=0.0)
+            l = sess.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
+            nats_per_dim = np.mean(l) / (args.img_size**2)
+        ls.append(nats_per_dim)
+        print(np.mean(ls))
 
     def sample_from_model(self):
         self.eval_set.reset()

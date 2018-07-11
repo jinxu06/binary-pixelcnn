@@ -43,12 +43,12 @@ class Learner(object):
 
     def train_epoch(self):
         for data in self.train_set:
-            feed_dict = make_feed_dict(data, is_training=True, dropout_p=0.5)
+            feed_dict = self._make_feed_dict(data, is_training=True, dropout_p=0.5)
             sess.run(self.optimize_op, feed_dict=feed_dict)
 
     def evaluate(self):
         for data in self.eval_set:
-            eed_dict = make_feed_dict(data, is_training=True, dropout_p=0.5)
+            eed_dict = self._make_feed_dict(data, is_training=True, dropout_p=0.5)
             sess.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
 
     def sample_from_model(self):

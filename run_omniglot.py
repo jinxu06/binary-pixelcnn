@@ -59,7 +59,7 @@ test_data, _ = omniglot.sample_mini_dataset(num_classes=1, num_shots=20, test_sh
 # train_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=train_set)
 # val_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=val_set)
 
-args.batch_size = 20
+args.batch_size = 10
 args.save_interval = 1
 all_data = []
 for d in test_data:
@@ -68,7 +68,7 @@ for d in test_data:
     all_data.append(d)
 all_data = np.concatenate(all_data, axis=0)
 np.random.shuffle(all_data)
-train_set, val_set = all_data[:8], all_data[8:]
+train_set, val_set = all_data[:10], all_data[10:]
 train_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=train_set)
 val_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=val_set)
 

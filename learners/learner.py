@@ -72,9 +72,9 @@ class Learner(object):
     def run(self, num_epoch, eval_interval, save_interval):
         for epoch in range(1, num_epoch+1):
             self.train_epoch()
-            if epoch % args.eval_interval == 0:
+            if epoch % eval_interval == 0:
                 self.evaluate()
-            if epoch % args.save_interval == 0:
+            if epoch % save_interval == 0:
                 # saver.save(sess, args.save_dir + '/params_' + args.data_set + '.ckpt')
                 samples = self.sample_from_model()
                 visualize_samples(samples, name="results/samples-{0}.png".format(epoch))

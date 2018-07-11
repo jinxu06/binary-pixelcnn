@@ -164,6 +164,8 @@ with tf.Session(config=config) as sess:
         print(np.mean(ls))
 
         if epoch % args.save_interval==0:
+            data = next(val_set)[:, :, :, None]
+            val_set.reset()
             # saver.save(sess, args.save_dir + '/params_' + args.data_set + '.ckpt')
             samples = sample_from_model(sess, data)
             visualize_samples(data, name="results/gt-{0}.png".format(epoch))

@@ -76,7 +76,7 @@ if True:
 
         train_step = adam_updates(all_params, grads[0], lr=args.learning_rate)
 
-mlearner = MetaLearner(session=None, parallel_models=models, optimize_op=train_step, train_set=train_set, eval_set=val_set, variables=tf.trainable_variables())
+mlearner = MetaLearner(session=None, parallel_models=models, optimize_op=train_step, train_set=meta_train_set, eval_set=meta_eval_set, variables=tf.trainable_variables())
 
 
 initializer = tf.global_variables_initializer()

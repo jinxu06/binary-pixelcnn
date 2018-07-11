@@ -47,8 +47,8 @@ if not os.path.exists(args.save_dir) and args.save_dir!="":
 
 data = np.load("omniglot.npz")
 train_set, val_set = data['train'], data['val']
-train_set = Dataset(batch_size=100, X=train_set)
-val_set = Dataset(batch_size=100, X=val_set)
+train_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=train_set)
+val_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=val_set)
 
 
 xs = [tf.placeholder(tf.float32, shape=(args.batch_size, args.img_size, args.img_size, 1)) for i in range(args.nr_gpu)]

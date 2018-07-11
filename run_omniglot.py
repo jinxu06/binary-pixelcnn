@@ -118,7 +118,7 @@ config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 with tf.Session(config=config) as sess:
     if args.debug:
-        sess = tf.debug.LocalCLIDebugWrapperSession(sess)
+        sess = tf_debug.LocalCLIDebugWrapperSession(sess)
 
     sess.run(initializer)
     # data = next(train_set)[0][:,:,:,None]

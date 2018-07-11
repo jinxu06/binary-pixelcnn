@@ -150,7 +150,7 @@ with tf.Session(config=config) as sess:
         saver.restore(sess, ckpt_file)
 
     learner.session = sess
-    learner.run(num_epoch=200, eval_interval=5, save_interval=5):
+    learner.run(num_epoch=200, eval_interval=5, save_interval=5)
 
     # max_num_epoch = 200
     # for epoch in range(max_num_epoch+1):

@@ -11,6 +11,7 @@ import data.mnist as mnist
 from models.binary_pixelcnn import BinaryPixelCNN
 from blocks.plots import visualize_samples
 from data.omniglot import OmniglotDataSource, Omniglot
+from data.dataset import Dataset
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-is', '--img_size', type=int, default=28, help="size of input image")

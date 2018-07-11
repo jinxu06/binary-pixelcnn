@@ -9,7 +9,7 @@ class MetaLearner(Learner):
 
     def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None):
         # transductive, pre_step_op
-        super().__init__(self, session, parallel_models, optimize_op, train_set, eval_set, variables)
+        super().__init__(session, parallel_models, optimize_op, train_set, eval_set, variables)
         self._model_state = VariableState(self.session, variables or tf.trainable_variables())
         self._full_state = VariableState(self.session,
                                          tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES))

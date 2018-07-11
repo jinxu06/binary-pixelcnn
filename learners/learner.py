@@ -44,13 +44,13 @@ class Learner(object):
     def train_epoch(self):
         for data in self.train_set:
             feed_dict = self._make_feed_dict(data, is_training=True, dropout_p=0.5)
-            sess.run(self.optimize_op, feed_dict=feed_dict)
+            self.session.run(self.optimize_op, feed_dict=feed_dict)
 
     def evaluate(self):
         ls = []
         for data in self.eval_set:
             eed_dict = self._make_feed_dict(data, is_training=False, dropout_p=0.0)
-            l = sess.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
+            l = self.session.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
             nats_per_dim = np.mean(l) / np.prod(data.shape[1:3])
         ls.append(nats_per_dim)
         print(np.mean(ls))
@@ -65,13 +65,13 @@ class Learner(object):
         feed_dict.update({m.dropout_p: 0. for m in self.parallel_models})
         feed_dict.update({m.inputs: ds[i] for i, m in enumerate(self.parallel_models)})
 
-        x_gen = [np.zeros_like(ds[i]) for i in range(args.nr_gpu)]
+        x_gen = [np.zeros_like(ds[i]) for i in range(self.nr_devices)]
         img_h, img_w = dd.shape[1], dd.shape[2]
         for yi in range(img_h):
             for xi in range(img_w):
                 feed_dict.update({m.inputs:x_gen[i] for i, m in enumerate(self.parallel_models)})
-                x_hat = sess.run([m.x_hat for m in self.parallel_models], feed_dict=feed_dict)
-                for i in range(args.nr_devices):
+                x_hat = self.session.run([m.x_hat for m in self.parallel_models], feed_dict=feed_dict)
+                for i in range(self.nr_devices):
                     x_gen[i][:, yi, xi, :] = x_hat[i][:, yi, xi, :]
         return np.concatenate(x_gen, axis=0)
 

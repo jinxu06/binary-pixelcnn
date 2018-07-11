@@ -16,14 +16,16 @@ from data.dataset import Dataset
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--debug', help='', action='store_true', default=False)
+parser.add_argument('-ds', '--data_set', type=str, default="", help='dataset name')
 parser.add_argument('-is', '--img_size', type=int, default=28, help="size of input image")
 parser.add_argument('-bs', '--batch_size', type=int, default=100, help='Batch size during training per GPU')
 parser.add_argument('-ng', '--nr_gpu', type=int, default=1, help='How many GPUs to distribute the training across?')
 parser.add_argument('-lr', '--learning_rate', type=float, default=0.001, help='Base learning rate')
-parser.add_argument('-sd', '--save_dir', type=str, default="", help='Location for parameter checkpoints and samples')
+parser.add_argument('-sd', '--save_dir', type=str, default="/data/ziz/jxu/hmaml-saved-models", help='Location for parameter checkpoints and samples')
 parser.add_argument('-g', '--gpus', type=str, default="", help='GPU No.s')
 parser.add_argument('-s', '--seed', type=int, default=1, help='Random seed to use')
 parser.add_argument('-si', '--save_interval', type=int, default=10, help='Every how many epochs to write checkpoint/samples?')
+parser.add_argument('-lp', '--load_params', dest='load_params', action='store_true', help='Restore training from previous model checkpoint?')
 args = parser.parse_args()
 
 args.nr_gpu = len(args.gpus.split(","))
@@ -31,6 +33,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = args.gpus
 print('input args:\n', json.dumps(vars(args), indent=4, separators=(',',':'))) # pretty print args
 if not os.path.exists(args.save_dir) and args.save_dir!="":
     os.makedirs(args.save_dir)
+
+tf.set_random_seed(args.seed)
+np.random.seed(args.seed)
 
 
 # source = OmniglotDataSource("/data/ziz/not-backed-up/jxu/omniglot")
@@ -119,10 +124,13 @@ config.gpu_options.allow_growth = True
 with tf.Session(config=config) as sess:
     if args.debug:
         sess = tf_debug.LocalCLIDebugWrapperSession(sess)
-
     sess.run(initializer)
-    # data = next(train_set)[0][:,:,:,None]
-    # feed_dict = make_feed_dict(data)
+
+    if args.load_params:
+        ckpt_file = args.save_dir + '/params_' + args.data_set + '.ckpt'
+        print('restoring parameters from', ckpt_file)
+        saver.restore(sess, ckpt_file)
+
     max_num_epoch = 200
     for epoch in range(max_num_epoch+1):
         print(epoch, "........")
@@ -141,6 +149,7 @@ with tf.Session(config=config) as sess:
         print(np.mean(ls))
 
         if epoch % args.save_interval==0:
+            saver.save(sess, args.save_dir + '/params_' + args.data_set + '.ckpt')
             samples = sample_from_model(sess, data)
             visualize_samples(data, name="results/gt-{0}.png".format(epoch))
             visualize_samples(samples, name="results/samples-{0}.png".format(epoch))

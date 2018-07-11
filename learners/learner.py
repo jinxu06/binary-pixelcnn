@@ -88,5 +88,5 @@ class Learner(object):
                 # saver.save(sess, args.save_dir + '/params_' + args.data_set + '.ckpt')
                 samples = self.sample_from_model()
                 visualize_samples(samples, name="results/samples-{0}.png".format(epoch))
-            print("Epoch {0}: {1:%0.3f}s ...................".format(epoch, train_time)
+            print("Epoch {0}: {1:%0.3f}s ...................".format(epoch, train_time))
             print("eval", e)

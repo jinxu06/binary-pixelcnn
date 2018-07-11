@@ -34,7 +34,7 @@ class Learner(object):
 
     def _make_feed_dict(self, data, is_training=True, dropout_p=0.5):
         dd = self._data_preprocessing(data)
-        ds = np.split(dd, args.nr_devices)
+        ds = np.split(dd, self.nr_devices)
         feed_dict = {}
         feed_dict.update({m.is_training: is_training for m in self.parallel_models})
         feed_dict.update({m.dropout_p: dropout_p for m in self.parallel_models})
@@ -51,7 +51,7 @@ class Learner(object):
         for data in self.eval_set:
             eed_dict = self._make_feed_dict(data, is_training=False, dropout_p=0.0)
             l = sess.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
-            nats_per_dim = np.mean(l) / (args.img_size**2)
+            nats_per_dim = np.mean(l) / np.prod(data.shape[1:3)
         ls.append(nats_per_dim)
         print(np.mean(ls))
 

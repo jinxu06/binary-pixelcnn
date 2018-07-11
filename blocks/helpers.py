@@ -4,6 +4,7 @@ import tensorflow as tf
 from tensorflow.contrib.framework.python.ops import arg_scope, add_arg_scope
 from PIL import Image
 
+
 def one_hot(y, num_classes):
     y = np.array(y).astype(np.int32)
     r = np.zeros((len(y), num_classes))

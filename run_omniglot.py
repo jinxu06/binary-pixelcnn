@@ -17,6 +17,7 @@ from learners.learner import Learner
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--debug', help='', action='store_true', default=False)
+parser.add_argument('-mne', '--max_num_epoch', type=int, default=200, help="maximal number of epoches")
 parser.add_argument('-ds', '--data_set', type=str, default="omniglot", help='dataset name')
 parser.add_argument('-is', '--img_size', type=int, default=28, help="size of input image")
 parser.add_argument('-bs', '--batch_size', type=int, default=100, help='Batch size during training per GPU')
@@ -150,7 +151,7 @@ with tf.Session(config=config) as sess:
         saver.restore(sess, ckpt_file)
 
     learner.session = sess
-    learner.run(num_epoch=200, eval_interval=5, save_interval=5)
+    learner.run(num_epoch=args.max_num_epoch, eval_interval=1, save_interval=args.save_interval)
 
     # max_num_epoch = 200
     # for epoch in range(max_num_epoch+1):

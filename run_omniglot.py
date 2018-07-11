@@ -33,10 +33,13 @@ if not os.path.exists(args.save_dir) and args.save_dir!="":
 source = OmniglotDataSource("/data/ziz/not-backed-up/jxu/omniglot")
 source.split_train_test(1200)
 omniglot = Omniglot(source.train_set, inner_batch_size=100)
-train_data, _ = omniglot.sample_mini_dataset(num_classes=1200 * 4, num_shots=100, test_shots=0)
-for k in range(5):
-    d = 1 - next(train_data)[0][:, :, :, None]
-    visualize_samples(d, name="results/omniglot_{0}.png".format(k+1), layout=[10, 10])
+train_data, _ = omniglot.sample_mini_dataset(num_classes=120 * 4, num_shots=20, test_shots=0)
+all_data =
+for d in train_data:
+    d = d[0][:, :, :, None]
+    all_data.append(d)
+all_data = np.concatenate(all_data, axis=0)
+print(all_data.shape)
 quit()
 
 xs = [tf.placeholder(tf.float32, shape=(args.batch_size, args.img_size, args.img_size, 1)) for i in range(args.nr_gpu)]

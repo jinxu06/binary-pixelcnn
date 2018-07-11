@@ -82,11 +82,11 @@ class Learner(object):
             self.qclock()
             self.train_epoch()
             train_time = self.qclock()
-            if epoch % eval_interval == 0:
-                e = self.evaluate()
+            # if epoch % eval_interval == 0:
+            l = self.evaluate()
             if epoch % save_interval == 0:
                 # saver.save(sess, args.save_dir + '/params_' + args.data_set + '.ckpt')
                 samples = self.sample_from_model()
                 visualize_samples(samples, name="results/samples-{0}.png".format(epoch))
             print("Epoch {0}: {1:0.3f}s ...................".format(epoch, train_time))
-            print("    Eval Loss: ", e)
+            print("    Eval Loss: ", l)

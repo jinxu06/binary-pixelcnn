@@ -168,5 +168,5 @@ with tf.Session(config=config) as sess:
             val_set.reset()
             # saver.save(sess, args.save_dir + '/params_' + args.data_set + '.ckpt')
             samples = sample_from_model(sess, data)
-            visualize_samples(data, name="results/gt-{0}.png".format(epoch))
-            visualize_samples(samples, name="results/samples-{0}.png".format(epoch))
+            visualize_samples(data, name="results/gt-{0}.png".format(epoch), layout=(4,4))
+            visualize_samples(samples, name="results/samples-{0}.png".format(epoch), layout=(4,4))

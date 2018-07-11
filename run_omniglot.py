@@ -16,12 +16,12 @@ from data.dataset import Dataset
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--debug', help='', action='store_true', default=False)
-parser.add_argument('-ds', '--data_set', type=str, default="", help='dataset name')
+parser.add_argument('-ds', '--data_set', type=str, default="omniglot", help='dataset name')
 parser.add_argument('-is', '--img_size', type=int, default=28, help="size of input image")
 parser.add_argument('-bs', '--batch_size', type=int, default=100, help='Batch size during training per GPU')
 parser.add_argument('-ng', '--nr_gpu', type=int, default=1, help='How many GPUs to distribute the training across?')
 parser.add_argument('-lr', '--learning_rate', type=float, default=0.001, help='Base learning rate')
-parser.add_argument('-sd', '--save_dir', type=str, default="/data/ziz/jxu/hmaml-saved-models", help='Location for parameter checkpoints and samples')
+parser.add_argument('-sd', '--save_dir', type=str, default="/data/ziz/jxu/hmaml-saved-models/test", help='Location for parameter checkpoints and samples')
 parser.add_argument('-g', '--gpus', type=str, default="", help='GPU No.s')
 parser.add_argument('-s', '--seed', type=int, default=1, help='Random seed to use')
 parser.add_argument('-si', '--save_interval', type=int, default=10, help='Every how many epochs to write checkpoint/samples?')
@@ -38,22 +38,25 @@ tf.set_random_seed(args.seed)
 np.random.seed(args.seed)
 
 
-# source = OmniglotDataSource("/data/ziz/not-backed-up/jxu/omniglot")
-# source.split_train_test(1200)
-# omniglot = Omniglot(source.train_set, inner_batch_size=100)
+source = OmniglotDataSource("/data/ziz/not-backed-up/jxu/omniglot")
+source.split_train_test(1200)
+omniglot = Omniglot(source.test_set, inner_batch_size=20)
+test_data, _ = omniglot.sample_mini_dataset(num_classes=1, num_shots=20, test_shots=0)
+
 # train_data, _ = omniglot.sample_mini_dataset(num_classes=1200 * 4, num_shots=20, test_shots=0)
-# all_data = []
-# for d in train_data:
-#     d = d[0]#[:, :, :, None]
-#     d = 1 - d
-#     all_data.append(d)
-# all_data = np.concatenate(all_data, axis=0)
-# np.random.shuffle(all_data)
+all_data = []
+for d in test_data:
+    d = d[0]#[:, :, :, None]
+    d = 1 - d
+    all_data.append(d)
+all_data = np.concatenate(all_data, axis=0)
+np.random.shuffle(all_data)
+train_set, val_set = all_data, all_data
 # train_set, val_set = all_data[:50000], all_data[50000:60000]
 # np.savez("omniglot", train=train_set, val=val_set)
 
-data = np.load("omniglot.npz")
-train_set, val_set = data['train'], data['val']
+# data = np.load("omniglot.npz")
+# train_set, val_set = data['train'], data['val']
 train_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=train_set)
 val_set = Dataset(batch_size=args.batch_size * args.nr_gpu, X=val_set)
 

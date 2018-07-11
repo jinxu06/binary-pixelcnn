@@ -52,7 +52,9 @@ class Learner(object):
             sess.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
 
     def sample_from_model(self):
+        self.eval_set.reset()
         dd = self._data_preprocessing(next(self.eval_set))
+        self.eval_set.reset()
         ds = np.split(dd, self.nr_devices)
         feed_dict = {}
         feed_dict.update({m.is_training: False for m in self.parallel_models})

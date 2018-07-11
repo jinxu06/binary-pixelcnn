@@ -4,7 +4,7 @@ import sys
 import numpy as np
 import tensorflow as tf
 
-from blocks.helpers import visualize_samples
+from blocks.plots import visualize_samples
 
 class Learner(object):
 

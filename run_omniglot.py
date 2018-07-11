@@ -13,6 +13,7 @@ from models.binary_pixelcnn import BinaryPixelCNN
 from blocks.plots import visualize_samples
 from data.omniglot import OmniglotDataSource, Omniglot
 from data.dataset import Dataset
+from learners.learner import Learner
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--debug', help='', action='store_true', default=False)
@@ -106,29 +107,31 @@ if True:
 
         train_step = adam_updates(all_params, grads[0], lr=args.learning_rate)
 
-def make_feed_dict(data, is_training=True, dropout_p=0.5):
-    data = np.rint(data)
-    ds = np.split(data, args.nr_gpu)
-    feed_dict = {is_trainings[i]: is_training for i in range(args.nr_gpu)}
-    feed_dict.update({dropout_ps[i]: dropout_p for i in range(args.nr_gpu)})
-    feed_dict.update({ xs[i]:ds[i] for i in range(args.nr_gpu) })
-    return feed_dict
+learner = Learner(session=None, parallel_models=models, optimize_op=train_step, train_set=train_set, eval_set=val_set, variables=tf.trainable_variables())
 
-def sample_from_model(sess, data):
-    data = np.rint(data)
-    ds = np.split(data, args.nr_gpu)
-    feed_dict = {is_trainings[i]: False for i in range(args.nr_gpu)}
-    feed_dict.update({dropout_ps[i]: 0. for i in range(args.nr_gpu)})
-    feed_dict.update({ xs[i]:ds[i] for i in range(args.nr_gpu) })
-
-    x_gen = [np.zeros_like(ds[i]) for i in range(args.nr_gpu)]
-    for yi in range(args.img_size):
-        for xi in range(args.img_size):
-            feed_dict.update({xs[i]:x_gen[i] for i in range(args.nr_gpu)})
-            x_hat = sess.run([models[i].x_hat for i in range(args.nr_gpu)], feed_dict=feed_dict)
-            for i in range(args.nr_gpu):
-                x_gen[i][:, yi, xi, :] = x_hat[i][:, yi, xi, :]
-    return np.concatenate(x_gen, axis=0)
+# def make_feed_dict(data, is_training=True, dropout_p=0.5):
+#     data = np.rint(data)
+#     ds = np.split(data, args.nr_gpu)
+#     feed_dict = {is_trainings[i]: is_training for i in range(args.nr_gpu)}
+#     feed_dict.update({dropout_ps[i]: dropout_p for i in range(args.nr_gpu)})
+#     feed_dict.update({ xs[i]:ds[i] for i in range(args.nr_gpu) })
+#     return feed_dict
+#
+# def sample_from_model(sess, data):
+#     data = np.rint(data)
+#     ds = np.split(data, args.nr_gpu)
+#     feed_dict = {is_trainings[i]: False for i in range(args.nr_gpu)}
+#     feed_dict.update({dropout_ps[i]: 0. for i in range(args.nr_gpu)})
+#     feed_dict.update({ xs[i]:ds[i] for i in range(args.nr_gpu) })
+#
+#     x_gen = [np.zeros_like(ds[i]) for i in range(args.nr_gpu)]
+#     for yi in range(args.img_size):
+#         for xi in range(args.img_size):
+#             feed_dict.update({xs[i]:x_gen[i] for i in range(args.nr_gpu)})
+#             x_hat = sess.run([models[i].x_hat for i in range(args.nr_gpu)], feed_dict=feed_dict)
+#             for i in range(args.nr_gpu):
+#                 x_gen[i][:, yi, xi, :] = x_hat[i][:, yi, xi, :]
+#     return np.concatenate(x_gen, axis=0)
 
 
 initializer = tf.global_variables_initializer()
@@ -146,28 +149,31 @@ with tf.Session(config=config) as sess:
         print('restoring parameters from', ckpt_file)
         saver.restore(sess, ckpt_file)
 
-    max_num_epoch = 200
-    for epoch in range(max_num_epoch+1):
-        print(epoch, "........")
-        tt = time.time()
-        for data in train_set:
-            data = data[:, :, :, None]
-            feed_dict = make_feed_dict(data, is_training=True, dropout_p=0.5)
-            sess.run(train_step, feed_dict=feed_dict)
+    learner.session = sess
+    learner.run(num_epoch=200, eval_interval=5, save_interval=5):
 
-        ls = []
-        for data in val_set:
-            data = data[:, :, :, None]
-            feed_dict = make_feed_dict(data, is_training=False, dropout_p=0.)
-            l = sess.run([models[i].loss for i in range(args.nr_gpu)], feed_dict=feed_dict)
-            bits_per_dim = np.sum(l) / (args.nr_gpu * (args.img_size**2))
-            ls.append(bits_per_dim)
-        print(np.mean(ls))
-
-        if epoch % args.save_interval==0:
-            data = next(val_set)[:, :, :, None]
-            val_set.reset()
-            # saver.save(sess, args.save_dir + '/params_' + args.data_set + '.ckpt')
-            samples = sample_from_model(sess, data)
-            visualize_samples(data, name="results/gt-{0}.png".format(epoch), layout=(2,5))
-            visualize_samples(samples, name="results/samples-{0}.png".format(epoch), layout=(2,5))
+    # max_num_epoch = 200
+    # for epoch in range(max_num_epoch+1):
+    #     print(epoch, "........")
+    #     tt = time.time()
+    #     for data in train_set:
+    #         data = data[:, :, :, None]
+    #         feed_dict = make_feed_dict(data, is_training=True, dropout_p=0.5)
+    #         sess.run(train_step, feed_dict=feed_dict)
+    #
+    #     ls = []
+    #     for data in val_set:
+    #         data = data[:, :, :, None]
+    #         feed_dict = make_feed_dict(data, is_training=False, dropout_p=0.)
+    #         l = sess.run([models[i].loss for i in range(args.nr_gpu)], feed_dict=feed_dict)
+    #         nats_per_dim = np.mean(l) / (args.img_size**2)
+    #         ls.append(nats_per_dim)
+    #     print(np.mean(ls))
+    #
+    #     if epoch % args.save_interval==0:
+    #         data = next(val_set)[:, :, :, None]
+    #         val_set.reset()
+    #         # saver.save(sess, args.save_dir + '/params_' + args.data_set + '.ckpt')
+    #         samples = sample_from_model(sess, data)
+    #         visualize_samples(data, name="results/gt-{0}.png".format(epoch), layout=(2,5))
+    #         visualize_samples(samples, name="results/samples-{0}.png".format(epoch), layout=(2,5))

@@ -31,25 +31,25 @@ if not os.path.exists(args.save_dir) and args.save_dir!="":
     os.makedirs(args.save_dir)
 
 
-source = OmniglotDataSource("/data/ziz/not-backed-up/jxu/omniglot")
-source.split_train_test(1200)
-omniglot = Omniglot(source.train_set, inner_batch_size=100)
-train_data, _ = omniglot.sample_mini_dataset(num_classes=1200 * 4, num_shots=20, test_shots=0)
-all_data = []
-for d in train_data:
-    d = d[0]#[:, :, :, None]
-    d = 1 - d
-    all_data.append(d)
-all_data = np.concatenate(all_data, axis=0)
-np.random.shuffle(all_data)
-train_set, val_set = all_data[:50000], all_data[50000:60000]
-np.savez("omniglot", train=train_set, val=val_set)
+# source = OmniglotDataSource("/data/ziz/not-backed-up/jxu/omniglot")
+# source.split_train_test(1200)
+# omniglot = Omniglot(source.train_set, inner_batch_size=100)
+# train_data, _ = omniglot.sample_mini_dataset(num_classes=1200 * 4, num_shots=20, test_shots=0)
+# all_data = []
+# for d in train_data:
+#     d = d[0]#[:, :, :, None]
+#     d = 1 - d
+#     all_data.append(d)
+# all_data = np.concatenate(all_data, axis=0)
+# np.random.shuffle(all_data)
+# train_set, val_set = all_data[:50000], all_data[50000:60000]
+# np.savez("omniglot", train=train_set, val=val_set)
 
 data = np.load("omniglot.npz")
 train_set, val_set = data['train'], data['val']
 train_set = Dataset(batch_size=100, X=train_set)
-print(next(train_set))
-quit()
+val_set = Dataset(batch_size=100, X=val_set)
+
 
 xs = [tf.placeholder(tf.float32, shape=(args.batch_size, args.img_size, args.img_size, 1)) for i in range(args.nr_gpu)]
 is_trainings = [tf.placeholder(tf.bool, shape=()) for i in range(args.nr_gpu)]

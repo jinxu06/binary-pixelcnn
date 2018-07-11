@@ -41,10 +41,13 @@ for d in train_data:
     all_data.append(d)
 all_data = np.concatenate(all_data, axis=0)
 np.random.shuffle(all_data)
-train_set, val_set = all_data[:50000], all_data[:50000:60000]
-print(train_set.shape)
-print(val_set.shape)
-print(train_set[0])
+train_set, val_set = all_data[:50000], all_data[50000:60000]
+np.savez("omniglot", train=train_set, val=val_set)
+
+data = np.load("omniglot.npz")
+train_set, val_set = data['train'], data['val']
+train_set = Dataset(batch_size=100, X=train_set)
+print(next(train_set))
 quit()
 
 xs = [tf.placeholder(tf.float32, shape=(args.batch_size, args.img_size, args.img_size, 1)) for i in range(args.nr_gpu)]

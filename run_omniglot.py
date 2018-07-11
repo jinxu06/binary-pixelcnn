@@ -117,8 +117,8 @@ config.gpu_options.allow_growth = True
 with tf.Session(config=config) as sess:
 
     sess.run(initializer)
-    data = next(train_set)[0][:,:,:,None]
-    feed_dict = make_feed_dict(data)
+    # data = next(train_set)[0][:,:,:,None]
+    # feed_dict = make_feed_dict(data)
     max_num_epoch = 200
     for epoch in range(max_num_epoch+1):
         print(epoch, "........")

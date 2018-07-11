@@ -34,7 +34,7 @@ source = OmniglotDataSource("/data/ziz/not-backed-up/jxu/omniglot")
 source.split_train_test(1200)
 omniglot = Omniglot(source.train_set, inner_batch_size=20)
 train_data, _ = omniglot.sample_mini_dataset(num_classes=5, num_shots=20, test_shots=0)
-d = next(train_data)
+d = next(train_data)[0]
 print(d)
 print(d.shape)
 visualize_samples(d, name="results/omniglot.png")

@@ -49,7 +49,7 @@ class Learner(object):
     def evaluate(self):
         ls = []
         for data in self.eval_set:
-            eed_dict = self._make_feed_dict(data, is_training=False, dropout_p=0.0)
+            feed_dict = self._make_feed_dict(data, is_training=False, dropout_p=0.0)
             l = self.session.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
             nats_per_dim = np.mean(l) / np.prod(data.shape[1:3])
         ls.append(nats_per_dim)

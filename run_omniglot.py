@@ -124,13 +124,13 @@ with tf.Session(config=config) as sess:
         print(epoch, "........")
         tt = time.time()
         for data in train_set:
-            data = data[0][:, :, :, None]
+            data = data[:, :, :, None]
             feed_dict = make_feed_dict(data, is_training=True, dropout_p=0.5)
             sess.run(train_step, feed_dict=feed_dict)
 
         ls = []
         for data in val_set:
-            data = data[0][:, :, :, None]
+            data = data[:, :, :, None]
             feed_dict = make_feed_dict(data, is_training=False, dropout_p=0.)
             l = sess.run([models[i].loss for i in range(args.nr_gpu)], feed_dict=feed_dict)
             ls.append(np.mean(l))

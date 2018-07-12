@@ -54,7 +54,9 @@ class BinaryPixelCNN(object):
 
                 # ////////// up pass through pixelCNN ////////
                 xs = int_shape(x)
-                x_pad = tf.concat([x, tf.ones(xs[:-1] + [1])], 3)
+                aparams = tf.Variable(np.zeros(xs), trainable=True)
+                x_pad = tf.concat([x, tf.ones(xs[:-1] + [1]), aparams], 3)
+
                 u_list = [down_shift(down_shifted_conv2d(
                     x_pad, num_filters=nr_filters, filter_size=[2, 3]))]  # stream for pixels above
                 ul_list = [down_shift(down_shifted_conv2d(x_pad, num_filters=nr_filters, filter_size=[1, 3])) +

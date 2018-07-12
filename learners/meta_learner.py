@@ -52,7 +52,7 @@ class MetaLearner(Learner):
                     train_set.reset()
                     last_backup = self._model_state.export_variables()
                     feed_dict = self._make_feed_dict(batch, is_training=True, dropout_p=0.5)
-                    self.session.run(optimize_op, feed_dict=feed_dict)
+                    self.session.run(self.optimize_op, feed_dict=feed_dict)
                 updates.append(subtract_vars(self._model_state.export_variables(), last_backup))
                 self._model_state.import_variables(old_vars)
             update = average_vars(updates)

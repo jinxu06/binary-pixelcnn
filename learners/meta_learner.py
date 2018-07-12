@@ -16,16 +16,26 @@ class MetaLearner(Learner):
 
 
 
-    def evaluate(self, num_tasks, num_train_epoch=5):
+    def evaluate(self, num_tasks, inner_iter=5):
         vs = []
         for _ in range(num_tasks):
             train_set, eval_set = self.train_set.sample_mini_dataset(num_classes=1, num_shots=10, test_shots=10)
             train_set.y, eval_set.y = None, None
             old_vars = self._full_state.export_variables()
-            task_learner = Learner(self.session, self.parallel_models, self.optimize_op, train_set, eval_set, self.variables)
-            for _ in range(num_train_epoch):
-                task_learner.train_epoch()
-            v = task_learner.evaluate()
+            for _ in range(inner_iter):
+                data = next(train_set)
+                train_set.reset()
+                feed_dict = self._make_feed_dict(data, is_training=True, dropout_p=0.5)
+                self.session.run(self.optimize_op, feed_dict=feed_dict)
+
+            ls = []
+            for data in eval_set:
+                feed_dict = self._make_feed_dict(data, is_training=False, dropout_p=0.0)
+                l = self.session.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
+                nats_per_dim = np.mean(l) / np.prod(data.shape[1:3])
+                ls.append(nats_per_dim)
+            v = np.mean(ls)
+            
             self._full_state.import_variables(old_vars)
             vs.append(v)
         return np.mean(vs)

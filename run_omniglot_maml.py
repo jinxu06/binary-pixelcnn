@@ -98,7 +98,7 @@ with tf.Session(config=config) as sess:
         "eval_num_tasks": 5,
         "meta_iter_per_epoch": 5,
         "meta_batch_size": 5,
-        "meta_step_size": 0.001,
+        "meta_step_size": 0.00001,
         "num_shots": 10,
         "test_shots": 10,
         "inner_iter": 5,

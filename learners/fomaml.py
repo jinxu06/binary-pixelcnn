@@ -7,47 +7,24 @@ from .meta_learner import MetaLearner
 
 class FOMAML(MetaLearner):
 
-    def __init__(self, *args, tail_shots=None, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None):
+        super().__init__(session, parallel_models, optimize_op, train_set, eval_set, variables)
 
-    def train_step(self,
-                   dataset,
-                   input_ph,
-                   label_ph,
-                   minimize_op,
-                   num_classes,
-                   num_shots,
-                   inner_batch_size,
-                   inner_iters,
-                   replacement,
-                   meta_step_size,
-                   meta_batch_size):
-        old_vars = self._model_state.export_variables()
-        updates = []
-        for _ in range(meta_batch_size):
-            mini_dataset = dataset.sample_task(num_shots, num_classes)
-            mini_batches = dataset.mini_batch(mini_dataset, inner_batch_size, inner_iters,
-                                              replacement)
-            for batch in mini_batches:
-                inputs, labels = zip(*batch)
-                last_backup = self._model_state.export_variables()
-                if self._pre_step_op:
-                    self.session.run(self._pre_step_op)
-                self.session.run(minimize_op, feed_dict={input_ph: inputs, label_ph: labels})
-            updates.append(subtract_vars(self._model_state.export_variables(), last_backup))
-            self._model_state.import_variables(old_vars)
-        update = average_vars(updates)
-        self._model_state.import_variables(add_vars(old_vars, scale_vars(update, meta_step_size)))
 
-    def _mini_batches(self, mini_dataset, inner_batch_size, inner_iters, replacement):
-        """
-        Generate inner-loop mini-batches for the task.
-        """
-        if self.tail_shots is None:
-            for value in _mini_batches(mini_dataset, inner_batch_size, inner_iters, replacement):
-                yield value
-            return
-        train, tail = _split_train_test(mini_dataset, test_shots=self.tail_shots)
-        for batch in _mini_batches(train, inner_batch_size, inner_iters - 1, replacement):
-            yield batch
-        yield tail
+    def train_epoch(self, meta_iter_per_epoch, meta_batch_size, meta_step_size, num_shots=12, test_shots=8, inner_iter=4, inner_batch_size=4):
+        for _ in range(meta_iter_per_epoch):
+            old_vars = self._model_state.export_variables()
+            updates = []
+            for _ in range(meta_batch_size):
+                train_set, eval_set = self.eval_set.sample_mini_dataset(num_classes=1, num_shots=num_shots, test_shots=test_shots)
+                train_set.y, eval_set.y = None, None
+                for _ in range(inner_iter):
+                    batch = next(train_set)
+                    train_set.reset()
+                    last_backup = self._model_state.export_variables()
+                    feed_dict = self._make_feed_dict(batch, is_training=True, dropout_p=0.5)
+                    self.session.run(self.optimize_op, feed_dict=feed_dict)
+                updates.append(subtract_vars(self._model_state.export_variables(), last_backup))
+                self._model_state.import_variables(old_vars)
+            update = average_vars(updates)
+            self._model_state.import_variables(add_vars(old_vars, scale_vars(update, meta_step_size)))

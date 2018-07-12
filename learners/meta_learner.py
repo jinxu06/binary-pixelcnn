@@ -16,16 +16,11 @@ class MetaLearner(Learner):
 
 
 
-    def evaluate(self, num_tasks, inner_iter=5):
+    def evaluate(self, num_tasks, num_shots=12, test_shots=8, inner_iter=4, inner_batch_size=4):
         vs = []
         for _ in range(num_tasks):
-            train_set, eval_set = self.train_set.sample_mini_dataset(num_classes=1, num_shots=10, test_shots=10)
+            train_set, eval_set = self.train_set.sample_mini_dataset(num_classes=1, num_shots=num_shots, test_shots=test_shots)
             train_set.y, eval_set.y = None, None
-            for t in train_set:
-                print(t.shape)
-            for t in eval_set:
-                print(t.shape)
-            quit()
             old_vars = self._full_state.export_variables()
             for _ in range(inner_iter):
                 data = next(train_set)
@@ -45,20 +40,19 @@ class MetaLearner(Learner):
             vs.append(v)
         return np.mean(vs)
 
-    def train_epoch(self, meta_iter, meta_batch_size, meta_step_size, batch_size, inner_iter):
-        for _ in range(meta_iter):
+    def train_epoch(self, meta_iter_per_epoch, meta_batch_size, meta_step_size, num_shots=12, test_shots=8, inner_iter=4, inner_batch_size=4):
+        for _ in range(meta_iter_per_epoch):
             old_vars = self._model_state.export_variables()
             updates = []
             for _ in range(meta_batch_size):
-                train_set, eval_set = self.eval_set.sample_mini_dataset(num_classes=1, num_shots=10, test_shots=10)
+                train_set, eval_set = self.eval_set.sample_mini_dataset(num_classes=1, num_shots=num_shots, test_shots=test_shots)
                 train_set.y, eval_set.y = None, None
-                task_learner = Learner(self.session, self.parallel_models, self.optimize_op, train_set, eval_set, self.variables)
                 for _ in range(inner_iter):
                     batch = next(train_set)
                     train_set.reset()
                     last_backup = self._model_state.export_variables()
-                    feed_dict = self._make_feed_dict()
-                    self.session.run(optimize_op, feed_dict=self._make_feed_dict(batch))
+                    feed_dict = self._make_feed_dict(batch, is_training=True, dropout_p=0.5)
+                    self.session.run(optimize_op, feed_dict=feed_dict)
                 updates.append(subtract_vars(self._model_state.export_variables(), last_backup))
                 self._model_state.import_variables(old_vars)
             update = average_vars(updates)
@@ -68,10 +62,10 @@ class MetaLearner(Learner):
     def run(self, num_epoch, eval_interval, save_interval, **kwargs):
         for epoch in range(1, num_epoch+1):
             self.qclock()
-            self.train_epoch(meta_iter, meta_batch_size, meta_step_size, batch_size, inner_iter)
+            self.train_epoch(meta_iter, meta_iter_per_epoch, meta_batch_size, meta_step_size, num_shots, test_shots, inner_iter, inner_batch_size)
             train_time = self.qclock()
             # if epoch % eval_interval == 0:
-            v = self.evaluate(num_tasks, num_train_epoch)
+            v = self.evaluate(num_tasks, num_shots, test_shots, inner_iter, inner_batch_size)
 
             print("Epoch {0}: {1:0.3f}s ...................".format(epoch, train_time))
             print("    Eval Loss: ", v)

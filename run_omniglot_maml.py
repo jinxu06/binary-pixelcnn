@@ -94,7 +94,17 @@ with tf.Session(config=config) as sess:
         print('restoring parameters from', ckpt_file)
         saver.restore(sess, ckpt_file)
 
+    params = {
+        "eval_num_tasks": 100,
+        "meta_iter_per_epoch": 100,
+        "meta_batch_size": 8,
+        "meta_step_size": 0.01,
+        "num_shots": 12,
+        "test_shots": 8
+        "inner_iter": 4,
+        "inner_batch_size": 4
+    }
+
     mlearner = MetaLearner(session=sess, parallel_models=models, optimize_op=train_step, train_set=meta_train_set, eval_set=meta_eval_set, variables=tf.trainable_variables())
-    v = mlearner.evaluate(num_tasks=10)
-    print(v)
+    mlearner.run(100, 1, 10, **params)
     # mlearner.run(num_epoch=args.max_num_epoch, eval_interval=1, save_interval=args.save_interval)

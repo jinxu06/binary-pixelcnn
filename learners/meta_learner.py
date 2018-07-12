@@ -65,7 +65,7 @@ class MetaLearner(Learner):
             self.train_epoch(meta_iter, meta_iter_per_epoch, meta_batch_size, meta_step_size, num_shots, test_shots, inner_iter, inner_batch_size)
             train_time = self.qclock()
             # if epoch % eval_interval == 0:
-            v = self.evaluate(num_tasks, num_shots, test_shots, inner_iter, inner_batch_size)
+            v = self.evaluate(eval_num_tasks, num_shots, test_shots, inner_iter, inner_batch_size)
 
             print("Epoch {0}: {1:0.3f}s ...................".format(epoch, train_time))
             print("    Eval Loss: ", v)

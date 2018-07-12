@@ -54,7 +54,7 @@ class BinaryPixelCNN(object):
 
                 # ////////// up pass through pixelCNN ////////
                 xs = int_shape(x)
-                aparams = tf.Variable(np.zeros(xs), trainable=True)
+                aparams = tf.Variable(np.zeros(xs, dtype=np.float32), trainable=True)
                 x_pad = tf.concat([x, tf.ones(xs[:-1] + [1]), aparams], 3)
 
                 u_list = [down_shift(down_shifted_conv2d(

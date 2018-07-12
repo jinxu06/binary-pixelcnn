@@ -62,7 +62,7 @@ class MetaLearner(Learner):
     def run(self, num_epoch, eval_interval, save_interval, **kwargs):
         for epoch in range(1, num_epoch+1):
             self.qclock()
-            self.train_epoch(meta_iter, meta_iter_per_epoch, meta_batch_size, meta_step_size, num_shots, test_shots, inner_iter, inner_batch_size)
+            self.train_epoch(meta_iter_per_epoch, meta_iter_per_epoch, meta_batch_size, meta_step_size, num_shots, test_shots, inner_iter, inner_batch_size)
             train_time = self.qclock()
             # if epoch % eval_interval == 0:
             v = self.evaluate(eval_num_tasks, num_shots, test_shots, inner_iter, inner_batch_size)

@@ -95,10 +95,10 @@ with tf.Session(config=config) as sess:
         saver.restore(sess, ckpt_file)
 
     params = {
-        "eval_num_tasks": 100,
-        "meta_iter_per_epoch": 100,
-        "meta_batch_size": 8,
-        "meta_step_size": 0.01,
+        "eval_num_tasks": 5,
+        "meta_iter_per_epoch": 5,
+        "meta_batch_size": 4,
+        "meta_step_size": 0.1,
         "num_shots": 12,
         "test_shots": 8,
         "inner_iter": 4,

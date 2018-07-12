@@ -60,7 +60,7 @@ class MetaLearner(Learner):
 
 
     def run(self, num_epoch, eval_interval, save_interval, eval_num_tasks, meta_iter_per_epoch, meta_batch_size, meta_step_size, num_shots, test_shots, inner_iter, inner_batch_size):
-        print("Epoch {0}: {1:0.3f}s ...................".format(0, train_time))
+        print("Epoch {0}: {1:0.3f}s ...................".format(0, 0.000))
         v = self.evaluate(eval_num_tasks, num_shots, test_shots, inner_iter, inner_batch_size)
         print("    Eval Loss: ", v)
 

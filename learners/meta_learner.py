@@ -21,6 +21,11 @@ class MetaLearner(Learner):
         for _ in range(num_tasks):
             train_set, eval_set = self.train_set.sample_mini_dataset(num_classes=1, num_shots=10, test_shots=10)
             train_set.y, eval_set.y = None, None
+            for t in train_set:
+                print(t.shape)
+            for t in eval_set:
+                print(t.shape)
+            quit()
             old_vars = self._full_state.export_variables()
             for _ in range(inner_iter):
                 data = next(train_set)
@@ -35,7 +40,7 @@ class MetaLearner(Learner):
                 nats_per_dim = np.mean(l) / np.prod(data.shape[1:3])
                 ls.append(nats_per_dim)
             v = np.mean(ls)
-            
+
             self._full_state.import_variables(old_vars)
             vs.append(v)
         return np.mean(vs)

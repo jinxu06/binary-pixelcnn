@@ -14,8 +14,7 @@ class MetaLearner(Learner):
         self._full_state = VariableState(self.session,
                                          tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES))
 
-    def _make_feed_dict(self):
-        pass
+
 
     def evaluate(self, num_tasks, num_train_epoch=5):
         vs = []

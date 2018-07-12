@@ -95,10 +95,10 @@ with tf.Session(config=config) as sess:
         saver.restore(sess, ckpt_file)
 
     params = {
-        "eval_num_tasks": 5,
-        "meta_iter_per_epoch": 5,
+        "eval_num_tasks": 20,
+        "meta_iter_per_epoch": 20,
         "meta_batch_size": 5,
-        "meta_step_size": 0.00001,
+        "meta_step_size": 0.0001,
         "num_shots": 10,
         "test_shots": 10,
         "inner_iter": 5,
@@ -107,4 +107,6 @@ with tf.Session(config=config) as sess:
 
     mlearner = MetaLearner(session=sess, parallel_models=models, optimize_op=train_step, train_set=meta_train_set, eval_set=meta_eval_set, variables=tf.trainable_variables())
     mlearner.run(100, 1, 10, **params)
+
+
     # mlearner.run(num_epoch=args.max_num_epoch, eval_interval=1, save_interval=args.save_interval)

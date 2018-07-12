@@ -59,7 +59,7 @@ class MetaLearner(Learner):
             self._model_state.import_variables(add_vars(old_vars, scale_vars(update, meta_step_size)))
 
 
-    def run(self, num_epoch, eval_interval, save_interval, **kwargs):
+    def run(self, num_epoch, eval_interval, save_interval, eval_num_tasks, meta_iter_per_epoch, meta_batch_size, meta_step_size, num_shots, test_shots, inner_iter, inner_batch_size):
         for epoch in range(1, num_epoch+1):
             self.qclock()
             self.train_epoch(meta_iter_per_epoch, meta_batch_size, meta_step_size, num_shots, test_shots, inner_iter, inner_batch_size)

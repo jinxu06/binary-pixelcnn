@@ -60,7 +60,7 @@ model_opt = {
 
 model = tf.make_template('model', BinaryPixelCNN.construct)
 
-for i in range(args.nr_models):
+for i in range(args.nr_model):
     with tf.device('/gpu:%d' % (i%args.nr_gpu)):
         model(models[i], xs[i], is_trainings[i], dropout_ps[i], **model_opt)
 

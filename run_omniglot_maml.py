@@ -14,7 +14,7 @@ from blocks.plots import visualize_samples
 #from data.omniglot import OmniglotDataSource, Omniglot
 import data.omniglot as omniglot
 from data.dataset import Dataset
-from learners.meta_learner import FOMAML
+from learners.fomaml import FOMAML
 
 
 parser = argparse.ArgumentParser()

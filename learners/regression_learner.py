@@ -41,10 +41,10 @@ class RegressionLearner(Learner):
             feed_dict = self._make_feed_dict(data, is_training=False)
             data = self._data_preprocessing(data)
             X, y = data
-            p = self.session.run([m.predictions for m in self.parallel_models], feed_dict=feed_dict)[:, 0]
+            p = self.session.run([m.predictions for m in self.parallel_models], feed_dict=feed_dict)
             Xs.append(X)
             ys.append(y)
-            ps.append(p)
+            ps += p
         Xs = np.concatenate(Xs, axis=0)
         ys = np.concatenate(ys, axis=0)
         ps = np.concatenate(ps, axis=0)

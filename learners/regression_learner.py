@@ -1,0 +1,36 @@
+import random
+import numpy as np
+import tensorflow as tf
+from learners.learner import Learner
+
+class RegressionLearner(Learner):
+
+    def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None):
+        super().__init__(session, parallel_models, optimize_op, train_set, eval_set, variables)
+
+    def _data_preprocessing(self, data):
+        return data
+
+    def _make_feed_dict(self, data, is_training=True):
+        data = self._data_preprocessing(data)
+        X, y = data
+        Xs = np.split(X, self.nr_model)
+        ys = np.split(y, self.nr_model)
+        feed_dict = {}
+        feed_dict.update({m.is_training: is_training for m in self.parallel_models})
+        feed_dict.update({m.X: Xs[i] for i, m in enumerate(self.parallel_models)})
+        feed_dict.update({m.y: ys[i] for i, m in enumerate(self.parallel_models)})
+        return feed_dict
+
+    def train_epoch(self):
+        for data in self.train_set:
+            feed_dict = self._make_feed_dict(data, is_training=True)
+            self.session.run(self.optimize_op, feed_dict=feed_dict)
+
+    def evaluate(self):
+        ls = []
+        for data in self.eval_set:
+            feed_dict = self._make_feed_dict(data, is_training=False)
+            l = self.session.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
+            ls.append(l)
+        return np.mean(ls)

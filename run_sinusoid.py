@@ -9,7 +9,7 @@ from tensorflow.python import debug as tf_debug
 from blocks.optimizers import adam_updates
 from models.mlp_regressor import MLPRegressor
 from data.dataset import Dataset
-from learners.learner import Learner
+from learners.regression_learner import RegressionLearner
 from data.sinusoid import Sinusoid, SineWave
 from data.dataset import Dataset
 import matplotlib.pyplot as plt
@@ -94,5 +94,5 @@ with tf.Session(config=config) as sess:
         print('restoring parameters from', ckpt_file)
         saver.restore(sess, ckpt_file)
 
-    learner = Learner(session=sess, parallel_models=models, optimize_op=train_step, train_set=train_set, eval_set=val_set, variables=tf.trainable_variables())
+    learner = RegressionLearner(session=sess, parallel_models=models, optimize_op=train_step, train_set=train_set, eval_set=val_set, variables=tf.trainable_variables())
     learner.run(num_epoch=args.max_num_epoch, eval_interval=1, save_interval=args.save_interval)

@@ -48,8 +48,8 @@ class RegressionLearner(Learner):
         Xs = np.concatenate(Xs, axis=0)
         ys = np.concatenate(ys, axis=0)
         ps = np.concatenate(ps, axis=0)
-        print(ys)
-        print(ps)
+        print(ys.shape)
+        print(ps.shape)
 
 
     def run(self, num_epoch, eval_interval, save_interval):

@@ -27,10 +27,12 @@ class MLPRegressor(object):
         self.loss = self._loss(self.y, self.outputs)
 
     def _model(self, x, nonlinearity, bn, kernel_initializer, kernel_regularizer, is_training):
+        bsize = int_shape(x)
         with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training, counters=self.counters):
             outputs = dense(x, 50)
             outputs = dense(outputs, 50)
             outputs = dense(outputs, 1, nonlinearity=None)
+            outputs = tf.reshape(outputs, shape=(bsize[0],))
             return outputs
 
 

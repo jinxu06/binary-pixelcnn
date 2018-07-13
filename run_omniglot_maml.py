@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python import debug as tf_debug
 from blocks.helpers import visualize_samples, get_nonlinearity, int_shape, get_trainable_variables
-from blocks.optimizers import adam_updates
+from blocks.optimizers import multi_gpu_adam_optimizer
 import data.mnist as mnist
 from models.binary_pixelcnn import BinaryPixelCNN
 from blocks.plots import visualize_samples
@@ -63,18 +63,19 @@ for i in range(args.nr_gpu):
     with tf.device('/gpu:%d' % i):
         model(models[i], xs[i], is_trainings[i], dropout_ps[i], **model_opt)
 
-if True:
-    all_params = tf.trainable_variables() #get_trainable_variables(["conv_encoder", "conv_decoder", "conv_pixel_cnn"])
-    grads = []
-    for i in range(args.nr_gpu):
-        with tf.device('/gpu:%d' % i):
-            grads.append(tf.gradients(models[i].loss, all_params, colocate_gradients_with_ops=True))
-    with tf.device('/gpu:0'):
-        for i in range(1, args.nr_gpu):
-            for j in range(len(grads[0])):
-                grads[0][j] += grads[i][j]
-
-        train_step = adam_updates(all_params, grads[0], lr=args.learning_rate)
+train_step = multi_gpu_adam_optimizer([models[i].loss for i in range(args.nr_gpu)], args.nr_gpu, args.learning_rate, params=tf.trainable_variables())
+# if True:
+#     all_params = tf.trainable_variables() #get_trainable_variables(["conv_encoder", "conv_decoder", "conv_pixel_cnn"])
+#     grads = []
+#     for i in range(args.nr_gpu):
+#         with tf.device('/gpu:%d' % i):
+#             grads.append(tf.gradients(models[i].loss, all_params, colocate_gradients_with_ops=True))
+#     with tf.device('/gpu:0'):
+#         for i in range(1, args.nr_gpu):
+#             for j in range(len(grads[0])):
+#                 grads[0][j] += grads[i][j]
+#
+#         train_step = adam_updates(all_params, grads[0], lr=args.learning_rate)
 
 
 

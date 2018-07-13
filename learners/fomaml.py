@@ -11,6 +11,31 @@ class FOMAML(MetaLearner):
         super().__init__(session, parallel_models, optimize_op, train_set, eval_set, variables)
 
 
+    def evaluate(self, num_tasks, num_shots=12, test_shots=8, inner_iter=4, inner_batch_size=4):
+        vs = []
+        for _ in range(num_tasks):
+            train_set, eval_set = self.train_set.sample_mini_dataset(num_classes=1, num_shots=num_shots, test_shots=test_shots)
+            train_set.y, eval_set.y = None, None
+            old_vars = self._full_state.export_variables()
+            for _ in range(inner_iter):
+                data = next(train_set)
+                train_set.reset()
+                feed_dict = self._make_feed_dict(data, is_training=True, dropout_p=0.5)
+                self.session.run(self.optimize_op, feed_dict=feed_dict)
+
+            ls = []
+            for data in eval_set:
+                feed_dict = self._make_feed_dict(data, is_training=False, dropout_p=0.0)
+                l = self.session.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
+                nats_per_dim = np.mean(l) / np.prod(data.shape[1:3])
+                ls.append(nats_per_dim)
+            v = np.mean(ls)
+
+            self._full_state.import_variables(old_vars)
+            vs.append(v)
+        return np.mean(vs)
+
+
     def train_epoch(self, meta_iter_per_epoch, meta_batch_size, meta_step_size, num_shots=12, test_shots=8, inner_iter=4, inner_batch_size=4):
         for _ in range(meta_iter_per_epoch):
             old_vars = self._model_state.export_variables()

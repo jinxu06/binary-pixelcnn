@@ -14,7 +14,7 @@ from blocks.plots import visualize_samples
 #from data.omniglot import OmniglotDataSource, Omniglot
 import data.omniglot as omniglot
 from data.dataset import Dataset
-from learners.meta_learner import MetaLearner
+from learners.meta_learner import FOMAML
 
 
 parser = argparse.ArgumentParser()
@@ -105,7 +105,7 @@ with tf.Session(config=config) as sess:
         "inner_batch_size": args.batch_size,
     }
 
-    mlearner = MetaLearner(session=sess, parallel_models=models, optimize_op=train_step, train_set=meta_train_set, eval_set=meta_eval_set, variables=tf.trainable_variables())
+    mlearner = FOMAML(session=sess, parallel_models=models, optimize_op=train_step, train_set=meta_train_set, eval_set=meta_eval_set, variables=tf.trainable_variables())
     mlearner.run(100, 1, 10, **params)
 
 

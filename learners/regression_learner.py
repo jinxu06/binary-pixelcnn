@@ -34,3 +34,32 @@ class RegressionLearner(Learner):
             l = self.session.run([m.loss for m in self.parallel_models], feed_dict=feed_dict)
             ls.append(l)
         return np.mean(ls)
+
+    def predict(self):
+        Xs, ys, ps = [], [], []
+        for data in self.eval_set:
+            feed_dict = self._make_feed_dict(data, is_training=False)
+            data = self._data_preprocessing(data)
+            X, y = data
+            p = self.session.run([m.predictions for m in self.parallel_models], feed_dict=feed_dict)
+            Xs.append(X)
+            ys.append(y)
+            ps.append(p)
+        Xs = np.concatenate(Xs, axis=0)
+        ys = np.concatenate(ys, axis=0)
+        ps = np.concatenate(ps, axis=0)
+        print(ys)
+        print(ps)
+
+
+    def run(self, num_epoch, eval_interval, save_interval):
+        for epoch in range(1, num_epoch+1):
+            self.qclock()
+            self.train_epoch()
+            train_time = self.qclock()
+            if epoch % eval_interval == 0:
+                v = self.evaluate()
+            if epoch % save_interval == 0:
+                self.predict()
+            print("Epoch {0}: {1:0.3f}s ...................".format(epoch, train_time))
+            print("    Eval Loss: ", v)

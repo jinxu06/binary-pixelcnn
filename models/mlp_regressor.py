@@ -24,7 +24,8 @@ class MLPRegressor(object):
         self.is_training = is_training
 
         self.outputs = self._model(X, nonlinearity, bn, kernel_initializer, kernel_regularizer, is_training)
-        self.loss = self._loss(self.y, self.outputs)
+        self.predictions = self.outputs
+        self.loss = self._loss(self.y, self.predictions)
 
     def _model(self, x, nonlinearity, bn, kernel_initializer, kernel_regularizer, is_training):
         bsize = int_shape(x)
@@ -36,5 +37,5 @@ class MLPRegressor(object):
             return outputs
 
 
-    def _loss(self, y, outputs):
-        return tf.losses.mean_squared_error(labels=y, predictions=outputs)
+    def _loss(self, y, predictions):
+        return tf.losses.mean_squared_error(labels=y, predictions=predictions)

@@ -24,6 +24,7 @@ parser.add_argument('-ds', '--data_set', type=str, default="omniglot", help='dat
 parser.add_argument('-is', '--img_size', type=int, default=28, help="size of input image")
 parser.add_argument('-bs', '--batch_size', type=int, default=100, help='Batch size during training per GPU')
 parser.add_argument('-ng', '--nr_gpu', type=int, default=1, help='How many GPUs to distribute the training across?')
+parser.add_argument('-nm', '--nr_model', type=int, default=1, help='How many models are there with shared parameters?')
 parser.add_argument('-lr', '--learning_rate', type=float, default=0.001, help='Base learning rate')
 parser.add_argument('-sd', '--save_dir', type=str, default="/data/ziz/jxu/hmaml-saved-models/test", help='Location for parameter checkpoints and samples')
 parser.add_argument('-g', '--gpus', type=str, default="", help='GPU No.s')
@@ -43,11 +44,11 @@ np.random.seed(args.seed)
 
 meta_train_set, meta_eval_set = omniglot.load("/data/ziz/not-backed-up/jxu/omniglot", args.batch_size, num_train=1200, augment_train_set=True, one_hot=True)
 
-xs = [tf.placeholder(tf.float32, shape=(args.batch_size, args.img_size, args.img_size, 1)) for i in range(args.nr_gpu)]
-is_trainings = [tf.placeholder(tf.bool, shape=()) for i in range(args.nr_gpu)]
-dropout_ps = [tf.placeholder(tf.float32, shape=()) for i in range(args.nr_gpu)]
+xs = [tf.placeholder(tf.float32, shape=(args.batch_size, args.img_size, args.img_size, 1)) for i in range(args.nr_model)]
+is_trainings = [tf.placeholder(tf.bool, shape=()) for i in range(args.nr_model)]
+dropout_ps = [tf.placeholder(tf.float32, shape=()) for i in range(args.nr_model)]
 
-models = [BinaryPixelCNN(counters={}) for i in range(args.nr_gpu)]
+models = [BinaryPixelCNN(counters={}) for i in range(args.nr_model)]
 model_opt = {
     "nr_resnet": 3,
     "nr_filters": 30,
@@ -59,26 +60,11 @@ model_opt = {
 
 model = tf.make_template('model', BinaryPixelCNN.construct)
 
-for i in range(args.nr_gpu):
-    with tf.device('/gpu:%d' % i):
+for i in range(args.nr_models):
+    with tf.device('/gpu:%d' % (i%args.nr_gpu)):
         model(models[i], xs[i], is_trainings[i], dropout_ps[i], **model_opt)
 
-train_step = multi_gpu_adam_optimizer([models[i].loss for i in range(args.nr_gpu)], args.nr_gpu, args.learning_rate, params=tf.trainable_variables())
-# if True:
-#     all_params = tf.trainable_variables() #get_trainable_variables(["conv_encoder", "conv_decoder", "conv_pixel_cnn"])
-#     grads = []
-#     for i in range(args.nr_gpu):
-#         with tf.device('/gpu:%d' % i):
-#             grads.append(tf.gradients(models[i].loss, all_params, colocate_gradients_with_ops=True))
-#     with tf.device('/gpu:0'):
-#         for i in range(1, args.nr_gpu):
-#             for j in range(len(grads[0])):
-#                 grads[0][j] += grads[i][j]
-#
-#         train_step = adam_updates(all_params, grads[0], lr=args.learning_rate)
-
-
-
+optimize_op = multi_gpu_adam_optimizer(models, args.nr_gpu, args.learning_rate, params=tf.trainable_variables())
 
 initializer = tf.global_variables_initializer()
 saver = tf.train.Saver()
@@ -106,7 +92,7 @@ with tf.Session(config=config) as sess:
         "inner_batch_size": args.batch_size,
     }
 
-    mlearner = FOMAML(session=sess, parallel_models=models, optimize_op=train_step, train_set=meta_train_set, eval_set=meta_eval_set, variables=tf.trainable_variables())
+    mlearner = FOMAML(session=sess, parallel_models=models, optimize_op=optimize_op, train_set=meta_train_set, eval_set=meta_eval_set, variables=tf.trainable_variables())
     mlearner.run(100, 1, 10, **params)
 
 

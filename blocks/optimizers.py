@@ -32,17 +32,22 @@ def adam_updates(params, cost_or_grads, lr=0.001, mom1=0.9, mom2=0.999):
     return adam_updates_op
 
 
-def multi_gpu_adam_optimizer(objectives, nr_gpu, learning_rate, params=None):
+def multi_gpu_adam_optimizer(models, nr_gpu, learning_rate, params=None):
+    nr_model = len(models)
     if params is None:
         params = tf.trainable_variables()
     grads = []
-    for i in range(nr_gpu):
-        with tf.device('/gpu:%d' % i):
-            grads.append(tf.gradients(objectives[i], all_params, colocate_gradients_with_ops=True))
+    for i in range(nr_model):
+        with tf.device('/gpu:%d' % (i%nr_gpu)):
+            grads.append(tf.gradients(models[i].loss, all_params, colocate_gradients_with_ops=True))
     with tf.device('/gpu:0'):
-        for i in range(1, nr_gpu):
+        for i in range(1, nr_model):
             for j in range(len(grads[0])):
                 grads[0][j] += grads[i][j]
 
         train_step = adam_updates(params, grads[0], lr=learning_rate)
     return train_step
+
+
+def maml_adam_updates(params, cost, lr=0.001, mom1=0.9, mom2=0.999):
+    grads = tf.gradients(cost, params)

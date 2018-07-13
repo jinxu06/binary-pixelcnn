@@ -23,7 +23,7 @@ class MLPRegressor(object):
         self.kernel_regularizer = kernel_regularizer
         self.is_training = is_training
 
-        self.outputs = self._model(x, nonlinearity, bn, kernel_initializer, kernel_regularizer, is_training)
+        self.outputs = self._model(X, nonlinearity, bn, kernel_initializer, kernel_regularizer, is_training)
         self.loss = self._loss(self.y, self.outputs)
 
     def _model(self, x, nonlinearity, bn, kernel_initializer, kernel_regularizer, is_training):

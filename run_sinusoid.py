@@ -48,7 +48,7 @@ val_set = Dataset(batch_size=args.batch_size, X=val_set[:, 0:1], y=val_set[:, 1]
 
 
 xs = [tf.placeholder(tf.float32, shape=(args.batch_size, 1)) for i in range(args.nr_gpu)]
-ys = [tf.placeholder(tf.float32, shape=(args.batch_size, 1)) for i in range(args.nr_gpu)]
+ys = [tf.placeholder(tf.float32, shape=(args.batch_size)) for i in range(args.nr_gpu)]
 is_trainings = [tf.placeholder(tf.bool, shape=()) for i in range(args.nr_gpu)]
 
 models = [MLPRegressor(counters={}) for i in range(args.nr_gpu)]

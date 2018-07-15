@@ -3,7 +3,7 @@ import json
 import argparse
 from functools import partial
 import numpy as np
-import tensorflow as tf 
+import tensorflow as tf
 
 def argument_parser():
     """
@@ -41,11 +41,10 @@ def argument_parser():
     return parser
 
 def prepare_args(args):
-    "Prepare args ......"
-    "   * infer nr_gpu"
+    print("Prepare args ......")
+    print("\t* infer nr_gpu")
     args.nr_gpu = len(args.gpus.split(","))
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpus
-    print('input args:\n', json.dumps(vars(args), indent=4, separators=(',',':'))) # pretty print args
     print("\t* check/make checkpoint directory")
     if not os.path.exists(args.checkpoint_dir) and args.checkpoint_dir!="":
         os.makedirs(args.checkpoint_dir)

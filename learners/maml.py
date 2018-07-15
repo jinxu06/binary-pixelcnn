@@ -26,6 +26,28 @@ class MAML(MetaLearner):
         return feed_dict
 
 
+    parser.add_argument('--learning_rate', type=float, default=0.001, help='Base learning rate')
+    parser.add_argument('--nr_model', type=int, default=1, help='How many models are there with shared parameters?')
+    parser.add_argument('--img_size', type=int, default=28, help="size of input image")
+    parser.add_argument('--num_shots', type=int, default=5, help="")
+    parser.add_argument('--test_shots', type=int, default=5, help="")
+    # parser.add_argument('--batch_size', type=int, default=100, help='Batch size during training per GPU')
+    #
+    parser.add_argument('--inner_batch', help='inner batch size', default=5, type=int)
+    parser.add_argument('--inner_iters', help='inner iterations', default=20, type=int)
+    parser.add_argument('--meta_step', help='meta-training step size', default=0.1, type=float)
+    parser.add_argument('--meta_step_final', help='meta-training step size by the end',
+                        default=0.1, type=float)
+    parser.add_argument('--meta_batch', help='meta-training batch size', default=1, type=int)
+    parser.add_argument('--meta_iters', help='meta-training iterations', default=400000, type=int)
+    parser.add_argument('--eval_batch', help='eval inner batch size', default=5, type=int)
+    parser.add_argument('--eval_iters', help='eval inner iterations', default=50, type=int)
+    parser.add_argument('--eval_samples', help='evaluation samples', default=10000, type=int)
+    parser.add_argument('--eval_interval', help='train steps per eval', default=10, type=int)
+
+    def evaluate():
+
+
     def evaluate(self, num_tasks, num_shots=12, test_shots=8, inner_iter=4, inner_batch_size=4):
         vs = []
         for _ in range(num_tasks):
@@ -75,4 +97,4 @@ class MAML(MetaLearner):
 
 
     def run(self):
-        pass 
+        pass

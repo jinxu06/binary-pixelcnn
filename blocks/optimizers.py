@@ -38,8 +38,7 @@ def multi_gpu_adam_optimizer(models, nr_gpu, learning_rate, params=None):
         params = tf.trainable_variables()
     grads = []
     for i in range(nr_model):
-        with tf.device('/gpu:%d' % (i%nr_gpu)):
-            grads.append(tf.gradients(models[i].loss, params, colocate_gradients_with_ops=True))
+        grads.append(models[i].gradients)
     with tf.device('/gpu:0'):
         for i in range(1, nr_model):
             for j in range(len(grads[0])):

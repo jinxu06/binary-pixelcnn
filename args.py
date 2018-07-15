@@ -58,6 +58,7 @@ def prepare_args(args):
     np.random.seed(args.seed)
 
     print('Input args:\n', json.dumps(vars(args), indent=4, separators=(',',':'))) # pretty print args
+    return args
 
 
 def model_kwards(model_name, parse_args, user_set_args={}):

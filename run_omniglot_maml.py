@@ -6,7 +6,7 @@ import time
 import numpy as np
 import tensorflow as tf
 from tensorflow.python import debug as tf_debug
-from args import argument_parser, prepare_args
+from args import argument_parser, prepare_args, model_kwards, learn_kwards
 from blocks.helpers import visualize_samples, get_nonlinearity, int_shape, get_trainable_variables
 from blocks.optimizers import multi_gpu_adam_optimizer
 import data.mnist as mnist
@@ -21,21 +21,10 @@ parser = argument_parser()
 args = parser.parse_args()
 args = prepare_args(args)
 
-meta_train_set, meta_eval_set = omniglot.load("/data/ziz/not-backed-up/jxu/omniglot", args.batch_size, num_train=1200, augment_train_set=True, one_hot=True)
-
+meta_train_set, meta_eval_set = omniglot.load("/data/ziz/not-backed-up/jxu/omniglot", args.inner_batch, num_train=1200, augment_train_set=True, one_hot=True)
 
 models = [BinaryPixelCNN(counters={}) for i in range(args.nr_model)]
-model_opt = {
-    "img_size": args.img_size,
-    "batch_size": args.batch_size,
-    "nr_model": args.nr_model,
-    "nr_resnet": 3,
-    "nr_filters": 30,
-    "nonlinearity": tf.nn.elu,
-    "bn": False,
-    "kernel_initializer": tf.contrib.layers.xavier_initializer(),
-    "kernel_regularizer":None,
-}
+model_opt = model_kwards('omniglot', args, {})
 
 model = tf.make_template('model', BinaryPixelCNN.construct)
 
@@ -60,16 +49,7 @@ with tf.Session(config=config) as sess:
         print('restoring parameters from', ckpt_file)
         saver.restore(sess, ckpt_file)
 
-    params = {
-        "eval_num_tasks": 20,
-        "meta_iter_per_epoch": 100,
-        "meta_batch_size": 5,
-        "meta_step_size": 1e-4,
-        "num_shots": 10,
-        "test_shots": 10,
-        "inner_iter": 5,
-        "inner_batch_size": args.batch_size,
-    }
+    params = learn_kwards('omniglot', args, {})
 
     mlearner = FOMAML(session=sess, parallel_models=models, optimize_op=optimize_op, train_set=meta_train_set, eval_set=meta_eval_set, variables=tf.trainable_variables())
     mlearner.run(100, 1, 10, **params)

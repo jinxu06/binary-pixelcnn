@@ -58,6 +58,37 @@ def prepare_args(args):
     print('Input args:\n', json.dumps(vars(args), indent=4, separators=(',',':'))) # pretty print args
 
 
+def model_kwards(model_name, parse_args, user_set_args={}):
+    if model_name == 'omniglot':
+        params = {
+            "img_size": parse_args.img_size,
+            "batch_size": parse_args.inner_batch,
+            "nr_model": parse_args.nr_model,
+            "nr_resnet": 3,
+            "nr_filters": 30,
+            "nonlinearity": tf.nn.elu,
+            "bn": False,
+            "kernel_initializer": tf.contrib.layers.xavier_initializer(),
+            "kernel_regularizer":None,
+        }
+        params.update(user_set_args)
+        return params
+
+
+def learn_kwards(model_name, parse_args, user_set_args={}):
+    if model_name == 'omniglot':
+        params = {
+            "eval_num_tasks": 20,
+            "meta_iter_per_epoch": 100,
+            "meta_batch_size": 5,
+            "meta_step_size": 1e-4,
+            "num_shots": 10,
+            "test_shots": 10,
+            "inner_iter": 5,
+            "inner_batch_size": args.inner_batch,
+        }
+        params.update(user_set_args)
+        return params
 
 
 def train_kwargs(parsed_args):

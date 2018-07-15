@@ -31,7 +31,7 @@ model = tf.make_template('model', BinaryPixelCNN.construct)
 for i in range(args.nr_model):
     device = tf.device('/gpu:%d' % (i%args.nr_gpu))
     with device:
-        model(models[i], device, tf.trainable_variables(), **model_opt)
+        model(models[i], device, **model_opt)
 
 all_params = tf.trainable_variables()
 for i in range(args.nr_model):

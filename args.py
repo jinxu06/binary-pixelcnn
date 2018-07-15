@@ -64,8 +64,8 @@ def prepare_args(args):
 def model_kwards(model_name, parse_args, user_set_args={}):
     if model_name == 'omniglot':
         params = {
-            "inner_step_size": parsed_args.meta_step,
-            "meta_iters": parsed_args.meta_iters,
+            "inner_step_size": parse_args.meta_step,
+            "meta_iters": parse_args.meta_iters,
             "img_size": parse_args.img_size,
             "batch_size": parse_args.inner_batch,
             "nr_model": parse_args.nr_model,

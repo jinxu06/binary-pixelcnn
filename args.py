@@ -25,7 +25,9 @@ def argument_parser():
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Base learning rate')
     parser.add_argument('--nr_model', type=int, default=1, help='How many models are there with shared parameters?')
     parser.add_argument('--img_size', type=int, default=28, help="size of input image")
-    parser.add_argument('--batch_size', type=int, default=100, help='Batch size during training per GPU')
+    parser.add_argument('--num_shots', type=int, default=5, help="")
+    parser.add_argument('--test_shots', type=int, default=5, help="")
+    # parser.add_argument('--batch_size', type=int, default=100, help='Batch size during training per GPU')
     #
     parser.add_argument('--inner_batch', help='inner batch size', default=5, type=int)
     parser.add_argument('--inner_iters', help='inner iterations', default=20, type=int)
@@ -61,6 +63,8 @@ def prepare_args(args):
 def model_kwards(model_name, parse_args, user_set_args={}):
     if model_name == 'omniglot':
         params = {
+            "inner_step_size": parsed_args.meta_step,
+            "meta_iters": parsed_args.meta_iters,
             "img_size": parse_args.img_size,
             "batch_size": parse_args.inner_batch,
             "nr_model": parse_args.nr_model,

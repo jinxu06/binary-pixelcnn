@@ -29,8 +29,11 @@ model_opt = model_kwards('omniglot', args, {})
 model = tf.make_template('model', BinaryPixelCNN.construct)
 
 for i in range(args.nr_model):
-    with tf.device('/gpu:%d' % (i%args.nr_gpu)):
-        model(models[i], **model_opt)
+    device = tf.device('/gpu:%d' % (i%args.nr_gpu))
+    with device:
+        model(models[i], device, **model_opt)
+
+quit()
 
 optimize_op = multi_gpu_adam_optimizer(models, args.nr_gpu, args.learning_rate, params=tf.trainable_variables())
 

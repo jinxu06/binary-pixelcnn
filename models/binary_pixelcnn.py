@@ -15,7 +15,11 @@ class BinaryPixelCNN(object):
     def __init__(self, counters={}):
         self.counters = counters
 
-    def construct(self, img_size, batch_size, nr_resnet=1, nr_filters=50, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
+    def construct(self, device, params, inner_step_size, inner_iters, img_size, batch_size, nr_resnet=1, nr_filters=50, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
+        self.device = device
+        self.params = params
+        self.inner_step_size = inner_step_size
+        self.inner_iters = inner_iters
         self.X = tf.placeholder(tf.float32, shape=(args.batch_size, args.img_size, args.img_size, 1))
         self.nr_filters = nr_filters
         self.nonlinearity = nonlinearity
@@ -30,23 +34,12 @@ class BinaryPixelCNN(object):
 
         self.x_hat = bernoulli_sampler(self.outputs)
 
-    # def _model(self, x, nr_resnet, nr_filters, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training):
-    #     with arg_scope([gated_resnet], nonlinearity=nonlinearity, dropout_p=dropout_p, counters=self.counters):
-    #         with arg_scope([gated_resnet, down_shifted_conv2d, down_right_shifted_conv2d], bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
-    #             xs = int_shape(x)
-    #             x_pad = tf.concat([x,tf.ones(xs[:-1]+[1])],3) # add channel of ones to distinguish image from padding later on
-    #
-    #             u_list = [down_shift(down_shifted_conv2d(x_pad, num_filters=nr_filters, filter_size=[2, 3]))] # stream for pixels above
-    #             ul_list = [down_shift(down_shifted_conv2d(x_pad, num_filters=nr_filters, filter_size=[1,3])) + \
-    #                     right_shift(down_right_shifted_conv2d(x_pad, num_filters=nr_filters, filter_size=[2,1]))] # stream for up and to the left
-    #             receptive_field = (2, 3)
-    #             for rep in range(nr_resnet):
-    #                 u_list.append(gated_resnet(u_list[-1], conv=down_shifted_conv2d))
-    #                 ul_list.append(gated_resnet(ul_list[-1], u_list[-1], conv=down_right_shifted_conv2d))
-    #                 receptive_field = (receptive_field[0]+1, receptive_field[1]+2)
-    #             x_out = nin(tf.nn.elu(ul_list[-1]), 1, nonlinearity=None)
-    #             print("    * receptive_field", receptive_field)
-    #             return x_out
+        self.gradients =  tf.gradients(self.loss, self.params, colocate_gradients_with_ops=True)
+        self.fast_params = self.params - self.inner_step_size * self.gradients
+        for i in range(inner_iters-1):
+            self.gradients =  tf.gradients(self.loss, self.params, colocate_gradients_with_ops=True)
+            self.fast_params -= self.inner_step_size * self.gradients  
+
 
     def _model(self, x, nr_resnet, nr_filters, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training):
         with arg_scope([gated_resnet], nonlinearity=nonlinearity, dropout_p=dropout_p, counters=self.counters):

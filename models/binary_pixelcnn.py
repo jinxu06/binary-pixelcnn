@@ -20,7 +20,7 @@ class BinaryPixelCNN(object):
         self.params = params
         self.inner_step_size = inner_step_size
         self.inner_iters = inner_iters
-        self.X = tf.placeholder(tf.float32, shape=(args.batch_size, args.img_size, args.img_size, 1))
+        self.X = tf.placeholder(tf.float32, shape=(batch_size, img_size, img_size, 1))
         self.nr_filters = nr_filters
         self.nonlinearity = nonlinearity
         self.dropout_p = tf.placeholder(tf.float32, shape=())
@@ -38,7 +38,7 @@ class BinaryPixelCNN(object):
         self.fast_params = self.params - self.inner_step_size * self.gradients
         for i in range(inner_iters-1):
             self.gradients =  tf.gradients(self.loss, self.params, colocate_gradients_with_ops=True)
-            self.fast_params -= self.inner_step_size * self.gradients  
+            self.fast_params -= self.inner_step_size * self.gradients
 
 
     def _model(self, x, nr_resnet, nr_filters, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training):

@@ -68,7 +68,6 @@ def model_kwards(model_name, parse_args, user_set_args={}):
             "inner_iters": parse_args.meta_iters,
             "img_size": parse_args.img_size,
             "batch_size": parse_args.inner_batch,
-            "nr_model": parse_args.nr_model,
             "nr_resnet": 3,
             "nr_filters": 30,
             "nonlinearity": tf.nn.elu,

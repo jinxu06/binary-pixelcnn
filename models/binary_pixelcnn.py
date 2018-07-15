@@ -20,11 +20,16 @@ class BinaryPixelCNN(object):
         self.params = params
         self.inner_step_size = inner_step_size
         self.inner_iters = inner_iters
-        self.X = tf.placeholder(tf.float32, shape=(batch_size, img_size, img_size, 1))
+        self.img_size = img_size
+        self.batch_size = batch_size
+        self.nr_resnet = nr_resnet
         self.nr_filters = nr_filters
         self.nonlinearity = nonlinearity
-        self.dropout_p = tf.placeholder(tf.float32, shape=())
         self.bn = bn
+
+        self.X = tf.placeholder(tf.float32, shape=(batch_size, img_size, img_size, 1))
+        self.dropout_p = tf.placeholder(tf.float32, shape=())
+
         self.kernel_initializer = kernel_initializer
         self.kernel_regularizer = kernel_regularizer
         self.is_training = tf.placeholder(tf.bool, shape=())

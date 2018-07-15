@@ -15,10 +15,8 @@ class BinaryPixelCNN(object):
     def __init__(self, counters={}):
         self.counters = counters
 
-    def construct(self, device, inner_step_size, inner_iters, img_size, batch_size, nr_resnet=1, nr_filters=50, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
+    def construct(self, device, img_size, batch_size, nr_resnet=1, nr_filters=50, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
         self.device = device
-        self.inner_step_size = inner_step_size
-        self.inner_iters = inner_iters
         self.img_size = img_size
         self.batch_size = batch_size
         self.nr_resnet = nr_resnet
@@ -38,7 +36,8 @@ class BinaryPixelCNN(object):
 
         self.x_hat = bernoulli_sampler(self.outputs)
 
-        self.params = tf.trainable_variables()
+
+    def construct_maml_ops(self, params, inner_step_size, inner_iters):
 
         print(self.params)
         gradients =  tf.gradients(self.loss, self.params, colocate_gradients_with_ops=True)

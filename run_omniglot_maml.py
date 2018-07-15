@@ -33,6 +33,11 @@ for i in range(args.nr_model):
     with device:
         model(models[i], device, tf.trainable_variables(), **model_opt)
 
+all_params = tf.trainable_variables()
+for i in range(args.nr_model):
+    with models[i].device:
+        models[i].construct_maml_ops(all_params, parse_args.meta_step, parse_args.meta_iters)
+
 quit()
 
 optimize_op = multi_gpu_adam_optimizer(models, args.nr_gpu, args.learning_rate, params=tf.trainable_variables())

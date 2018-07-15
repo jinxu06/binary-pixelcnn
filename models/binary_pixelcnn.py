@@ -40,12 +40,13 @@ class BinaryPixelCNN(object):
     def construct_maml_ops(self, params, inner_step_size, inner_iters):
         self.params = params
         gradients =  tf.gradients(self.loss, self.params, colocate_gradients_with_ops=True)
-        print(gradients)
+        print(len(gradients), gradients[0])
         self.fast_params = [p - inner_step_size * grad for p, grad in zip(self.params, gradients)]
-        print(self.fast_params)
+        print(len(self.fast_params), self.fast_params[0])
         for i in range(inner_iters-1):
             gradients =  tf.gradients(self.loss, self.fast_params, colocate_gradients_with_ops=True)
-            self.fast_params = [p - inner_step_size * grad for p, grad in zip(fast_params, gradients)]
+            self.fast_params = [p - inner_step_size * grad for p, grad in zip(self.fast_params, gradients)]
+        print(len(self.fast_params), self.fast_params[0])
 
     def _model(self, x, nr_resnet, nr_filters, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training):
         with arg_scope([gated_resnet], nonlinearity=nonlinearity, dropout_p=dropout_p, counters=self.counters):

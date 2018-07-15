@@ -2,6 +2,9 @@ import random
 import numpy as np
 import tensorflow as tf
 from learners.learner import Learner
+import matplotlib.pyplot as plt
+from blocks.plots import visualize_func
+
 
 class RegressionLearner(Learner):
 
@@ -48,8 +51,15 @@ class RegressionLearner(Learner):
         Xs = np.concatenate(Xs, axis=0)
         ys = np.concatenate(ys, axis=0)
         ps = np.concatenate(ps, axis=0)
-        print(ys[:10])
-        print(ps[:10])
+        return Xs, ys, ps
+
+    def _test(self):
+        ls = []
+        data = next(self.eval_set)
+        self.eval_set.reset()
+        feed_dict = self._make_feed_dict(data, is_training=False)
+        r = self.session.run([m.z_sigma for m in self.parallel_models], feed_dict=feed_dict)
+        return r[0].shape
 
 
     def run(self, num_epoch, eval_interval, save_interval):
@@ -59,7 +69,11 @@ class RegressionLearner(Learner):
             train_time = self.qclock()
             if epoch % eval_interval == 0:
                 v = self.evaluate()
+                print("test", self._test())
             if epoch % save_interval == 0:
-                self.predict()
+                Xs, ys, ps = self.predict()
+                ax = visualize_func(Xs, ys, ax=None)
+                ax = visualize_func(Xs, ps, ax=ax)
+                plt.show()
             print("Epoch {0}: {1:0.3f}s ...................".format(epoch, train_time))
             print("    Eval Loss: ", v)

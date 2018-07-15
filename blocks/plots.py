@@ -1,5 +1,7 @@
 import numpy as np
 from PIL import Image
+import matplotlib.pyplot as plt
+plt.style.use("ggplot")
 
 def tile_images(imgs, size=(6, 6)):
     imgs = imgs[:size[0]*size[1], :, :, :]
@@ -20,3 +22,23 @@ def visualize_samples(images, name="results/test.png", layout=[5,5], vrange=[0.,
         return view
     view = Image.fromarray(view, 'RGB')
     view.save(name)
+
+def visualize_func(X, y, ax=None):
+    o = X[:, 0].argsort()
+    X = X[o]
+    y = y[o]
+    if ax is None:
+        fig = plt.figure(figsize=(8, 6))
+        ax = fig.add_subplot(111)
+    ax.plot(X, y, "+-")
+    return ax
+
+
+# fig = plt.figure(figsize=(8,6))
+# ax = fig.add_subplot(111)
+#
+# for i in range(len(sines)):
+#     s = sines[i].sample(500)
+#     s = s[s[:,0].argsort()]
+#     ax.plot(s[:,0], s[:,1], '.-')
+# plt.show()

@@ -15,17 +15,17 @@ class BinaryPixelCNN(object):
     def __init__(self, counters={}):
         self.counters = counters
 
-    def construct(self, inputs, is_training, dropout_p, nr_resnet=1, nr_filters=50, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
-        self.inputs = inputs
+    def construct(self, img_size, batch_size, nr_resnet=1, nr_filters=50, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
+        self.X = tf.placeholder(tf.float32, shape=(args.batch_size, args.img_size, args.img_size, 1))
         self.nr_filters = nr_filters
         self.nonlinearity = nonlinearity
-        self.dropout_p = dropout_p
+        self.dropout_p = tf.placeholder(tf.float32, shape=())
         self.bn = bn
         self.kernel_initializer = kernel_initializer
         self.kernel_regularizer = kernel_regularizer
-        self.is_training = is_training
+        self.is_training = tf.placeholder(tf.bool, shape=())
 
-        self.outputs = self._model(inputs, nr_resnet, nr_filters, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training)
+        self.outputs = self._model(self.X, self.nr_resnet, self.nr_filters, self.nonlinearity, self.dropout_p, self.bn, self.kernel_initializer, self.kernel_regularizer, self.is_training)
         self.loss = self._loss(self.inputs, self.outputs)
 
         self.x_hat = bernoulli_sampler(self.outputs)

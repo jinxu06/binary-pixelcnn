@@ -35,7 +35,7 @@ class BinaryPixelCNN(object):
         self.is_training = tf.placeholder(tf.bool, shape=())
 
         self.outputs = self._model(self.X, self.nr_resnet, self.nr_filters, self.nonlinearity, self.dropout_p, self.bn, self.kernel_initializer, self.kernel_regularizer, self.is_training)
-        self.loss = self._loss(self.inputs, self.outputs)
+        self.loss = self._loss(self.X, self.outputs)
 
         self.x_hat = bernoulli_sampler(self.outputs)
 

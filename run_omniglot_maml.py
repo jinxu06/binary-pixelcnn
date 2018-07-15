@@ -37,7 +37,7 @@ all_params = tf.trainable_variables()
 for i in range(args.nr_model):
     device = tf.device('/gpu:%d' % (i%args.nr_gpu))
     with device:
-        models[i].construct_maml_ops(all_params, parse_args.meta_step, parse_args.meta_iters)
+        models[i].construct_maml_ops(all_params, args.meta_step, args.meta_iters)
 
 quit()
 

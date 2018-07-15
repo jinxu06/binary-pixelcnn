@@ -38,7 +38,7 @@ class BinaryPixelCNN(object):
 
 
     def construct_maml_ops(self, params, inner_step_size, inner_iters):
-
+        self.params
         print(self.params)
         gradients =  tf.gradients(self.loss, self.params, colocate_gradients_with_ops=True)
         print(gradients)

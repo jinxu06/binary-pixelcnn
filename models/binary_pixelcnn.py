@@ -39,12 +39,14 @@ class BinaryPixelCNN(object):
 
         self.x_hat = bernoulli_sampler(self.outputs)
 
-        self.gradients =  tf.gradients(self.loss, self.params, colocate_gradients_with_ops=True)
-        self.fast_params = self.params - self.inner_step_size * self.gradients
+        print(self.params)
+        gradients =  tf.gradients(self.loss, self.params, colocate_gradients_with_ops=True)
+        print(gradients)
+        self.fast_params = [p - self.inner_step_size * grad for p, grad in zip(self.params, self.gradients)]
+        print(self.fast_params)
         for i in range(inner_iters-1):
-            self.gradients =  tf.gradients(self.loss, self.params, colocate_gradients_with_ops=True)
-            self.fast_params -= self.inner_step_size * self.gradients
-
+            gradients =  tf.gradients(self.loss, self.fast_params, colocate_gradients_with_ops=True)
+            self.fast_params = [p - self.inner_step_size * grad for p, grad in zip(fast_params, gradients)]
 
     def _model(self, x, nr_resnet, nr_filters, nonlinearity, dropout_p, bn, kernel_initializer, kernel_regularizer, is_training):
         with arg_scope([gated_resnet], nonlinearity=nonlinearity, dropout_p=dropout_p, counters=self.counters):

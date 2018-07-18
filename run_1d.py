@@ -20,7 +20,7 @@ parser = argument_parser()
 args = parser.parse_args()
 args = prepare_args(args)
 
-gpsampler = GPSampler(input_range=[-4., 4.], var_range=[1., 1.], max_num_samples=200)
+gpsampler = GPSampler(input_range=[-4., 4.], var_range=[1., 1.], max_num_samples=20)
 train_set, val_set = gpsampler, gpsampler
 
 models = [NeuralProcess(counters={}) for i in range(args.nr_model)]
@@ -67,7 +67,7 @@ with tf.Session(config=config) as sess:
         "save_interval": args.save_interval,
         "eval_samples": 100,
         "meta_batch": args.nr_model,
-        "num_shots": 100,
-        "test_shots": 100,
+        "num_shots": 10,
+        "test_shots": 10,
     }
     learner.run(**run_params)

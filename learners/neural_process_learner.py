@@ -4,6 +4,8 @@ import numpy as np
 import tensorflow as tf
 from learners.learner import Learner
 from blocks.optimizers import adam_updates
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 from blocks.plots import sort_x
@@ -16,7 +18,7 @@ class NPLearner(Learner):
 
     def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None, lr=0.001):
         super().__init__(session, parallel_models, optimize_op, train_set, eval_set, variables)
-        self.lr = lr 
+        self.lr = lr
 
         grads = []
         for i in range(self.nr_model):
@@ -79,6 +81,7 @@ class NPLearner(Learner):
                 #ax.scatter(X_t_value[:,0], y_hat)
         #plt.show()
         fig.savefig("results/np1.pdf")
+        plt.close()
 
 
     def run(self, num_epoch, eval_interval, save_interval, eval_samples, meta_batch, num_shots, test_shots):

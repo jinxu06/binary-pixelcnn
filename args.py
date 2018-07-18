@@ -22,7 +22,7 @@ def argument_parser():
     parser.add_argument('--save_interval', type=int, default=10, help='Every how many epochs to write checkpoint/samples?')
     parser.add_argument('--load_params', dest='load_params', action='store_true', help='Restore training from previous model checkpoint?')
     #
-    parser.add_argument('--learning_rate', type=float, default=0.001, help='Base learning rate')
+    parser.add_argument('--learning_rate', type=float, default=0.0001, help='Base learning rate')
     parser.add_argument('--nr_model', type=int, default=1, help='How many models are there with shared parameters?')
     parser.add_argument('--img_size', type=int, default=28, help="size of input image")
     parser.add_argument('--num_shots', type=int, default=5, help="")

@@ -14,8 +14,9 @@ from blocks.plots import sort_x
 
 class NPLearner(Learner):
 
-    def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None):
+    def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None, lr=0.001):
         super().__init__(session, parallel_models, optimize_op, train_set, eval_set, variables)
+        self.lr = lr 
 
         grads = []
         for i in range(self.nr_model):
@@ -25,7 +26,7 @@ class NPLearner(Learner):
                 for j in range(len(grads[0])):
                     grads[0][j] += grads[i][j]
         self.aggregated_grads = grads[0]
-        self.optimize_op = adam_updates(tf.trainable_variables(), self.aggregated_grads, lr=0.0001, mom1=0.9, mom2=0.999)
+        self.optimize_op = adam_updates(tf.trainable_variables(), self.aggregated_grads, lr=lr)
 
     def set_session(self, sess):
         self.session = sess

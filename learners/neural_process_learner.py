@@ -62,7 +62,7 @@ class NPLearner(Learner):
             ls.append(l)
         return np.mean(ls)
 
-    def test(self, num_function, num_shots, test_shots):
+    def test(self, num_function, num_shots, test_shots, epoch=1):
         fig = plt.figure(figsize=(10,6))
         a = int(np.sqrt(num_function))
         for i in range(num_function):
@@ -78,7 +78,7 @@ class NPLearner(Learner):
                 ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
                 #ax.scatter(X_t_value[:,0], y_hat)
         #plt.show()
-        fig.savefig("results/np1.pdf")
+        fig.savefig("results/np{0}.pdf".format(epoch))
         plt.close()
 
 
@@ -95,4 +95,4 @@ class NPLearner(Learner):
             print("    Eval Loss: ", v)
             sys.stdout.flush()
             if epoch % save_interval == 0:
-                self.test(9, num_shots, test_shots)
+                self.test(9, num_shots, test_shots, epoch=epoch)

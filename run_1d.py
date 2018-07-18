@@ -35,8 +35,8 @@ model_opt = {
     "aggregator": aggregator,
     "conditional_decoder": conditional_decoder,
     "obs_shape": [1],
-    "r_dim": 8,
-    "z_dim": 8,
+    "r_dim": 5,
+    "z_dim": 5,
     "nonlinearity": tf.nn.elu,
     "bn": True,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(),
@@ -69,7 +69,7 @@ with tf.Session(config=config) as sess:
         "save_interval": args.save_interval,
         "eval_samples": 100,
         "meta_batch": args.nr_model,
-        "num_shots": 10,
-        "test_shots": 10,
+        "num_shots": 100,
+        "test_shots": 100,
     }
     learner.run(**run_params)

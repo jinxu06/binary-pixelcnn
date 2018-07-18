@@ -22,7 +22,7 @@ parser = argument_parser()
 args = parser.parse_args()
 args = prepare_args(args)
 
-gpsampler = GPSampler(input_range=[-4., 4.], var_range=[1., 1.], max_num_samples=20)
+gpsampler = GPSampler(input_range=[-4., 4.], var_range=[1., 1.], max_num_samples=200)
 train_set, val_set = gpsampler, gpsampler
 
 models = [NeuralProcess(counters={}) for i in range(args.nr_model)]

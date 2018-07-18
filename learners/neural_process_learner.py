@@ -4,8 +4,6 @@ import numpy as np
 import tensorflow as tf
 from learners.learner import Learner
 from blocks.optimizers import adam_updates
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 from blocks.plots import sort_x

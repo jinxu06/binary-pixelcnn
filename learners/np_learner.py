@@ -7,7 +7,7 @@ from blocks.plots import visualize_func
 from data.dataset import Dataset
 
 
-class RegressionMetaLearner(Learner):
+class NPLearner(Learner):
 
     def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None):
         super().__init__(session, parallel_models, optimize_op, train_set, eval_set, variables)
@@ -18,12 +18,20 @@ class RegressionMetaLearner(Learner):
     def _make_feed_dict(self, data, is_training=True, z_value=None, use_z_ph=False):
         data = self._data_preprocessing(data)
         X, y = data
-        Xs = np.split(X, self.nr_model)
-        ys = np.split(y, self.nr_model)
+        X_c, X_t = np.split(X, 2)
+        y_c, y_t = np.split(y, 2)
+        Xs_c = np.split(X_c, self.nr_model)
+        ys_c = np.split(y_c, self.nr_model)
+        Xs_t = np.split(X_t, self.nr_model)
+        ys_t = np.split(y_t, self.nr_model)
         feed_dict = {}
         feed_dict.update({m.is_training: is_training for m in self.parallel_models})
-        feed_dict.update({m.X: Xs[i] for i, m in enumerate(self.parallel_models)})
-        feed_dict.update({m.y: ys[i] for i, m in enumerate(self.parallel_models)})
+        # feed_dict.update({m.X: Xs[i] for i, m in enumerate(self.parallel_models)})
+        # feed_dict.update({m.y: ys[i] for i, m in enumerate(self.parallel_models)})
+        feed_dict.update({m.X_c: Xs_c[i] for i, m in enumerate(self.parallel_models)})
+        feed_dict.update({m.y_c: ys_c[i] for i, m in enumerate(self.parallel_models)})
+        feed_dict.update({m.X_t: Xs_t[i] for i, m in enumerate(self.parallel_models)})
+        feed_dict.update({m.y_t: ys_t[i] for i, m in enumerate(self.parallel_models)})
         if use_z_ph:
             feed_dict.update({m.use_z_ph: True for m in self.parallel_models})
             feed_dict.update({m.z_ph: z_value for m in self.parallel_models})
@@ -116,7 +124,7 @@ class RegressionMetaLearner(Learner):
                 Xs, ys, ps = self.predict(sine, z_value=z_value)
                 ax = visualize_func(Xs, ps, ax=ax)
 
-                z_value = - np.ones((1, 10)) 
+                z_value = - np.ones((1, 10))
                 Xs, ys, ps = self.predict(sine, z_value=z_value)
                 ax = visualize_func(Xs, ps, ax=ax)
 

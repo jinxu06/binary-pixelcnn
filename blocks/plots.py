@@ -3,6 +3,10 @@ from PIL import Image
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 
+def sort_x(x, y):
+    p = np.argsort(x)
+    return x[p], y[p]
+
 def tile_images(imgs, size=(6, 6)):
     imgs = imgs[:size[0]*size[1], :, :, :]
     if imgs.shape[-1] == 1:

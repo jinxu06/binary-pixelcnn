@@ -23,19 +23,21 @@ def omniglot_conv_encoder(inputs, r_dim, is_training, nonlinearity=None, bn=True
             r = tf.dense(outputs, r_dim, nonlinearity=None, bn=False)
             return r
 
+
 @add_arg_scope
-def sinusoid_fc_encoder(inputs, r_dim, is_training, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, counters={}):
-    name = get_name("sinusoid_fc_encoder", counters)
+def fc_encoder(X, y, r_dim, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False, counters={}):
+    inputs = tf.concat([X, y[:, None]], axis=1)
+    name = get_name("fc_encoder", counters)
     print("construct", name, "...")
     with tf.variable_scope(name):
         with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
-            outputs = dense(inputs, 10)
-            outputs = dense(outputs, 10)
+            outputs = dense(inputs, 20)
+            outputs = dense(outputs, 20)
             outputs = dense(outputs, r_dim, nonlinearity=None)
             return outputs
 
 @add_arg_scope
-def aggregator(r, z_dim, method=tf.reduce_mean, counters={}):
+def aggregator(r, z_dim, method=tf.reduce_mean, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False, counters={}):
     name = get_name("aggregator", counters)
     print("construct", name, "...")
     with tf.variable_scope(name):
@@ -43,3 +45,57 @@ def aggregator(r, z_dim, method=tf.reduce_mean, counters={}):
         z_mu = dense(r, z_dim, nonlinearity=None, bn=False)
         z_log_sigma_sq = dense(r, z_dim, nonlinearity=None, bn=False)
         return z_mu, z_log_sigma_sq
+
+@add_arg_scope
+def conditional_decoder(x, z, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False, counters={}):
+    name = get_name("conditional_decoder", counters)
+    print("construct", name, "...")
+    with tf.variable_scope(name):
+        with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
+            batch_size = tf.shape(x)[0]
+            z = tf.tile(z, tf.stack([batch_size, 1]))
+            xz = tf.concat([x, z], axis=1)
+            outputs = dense(xz, 100)
+            outputs = dense(outputs, 100)
+            outputs = dense(outputs, 100)
+            outputs = dense(outputs, 1, nonlinearity=None)
+            outputs = tf.reshape(outputs, shape=(batch_size,))
+            return outputs
+
+
+# @add_arg_scope
+# def fc_encoder(inputs, r_dim, is_training, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, counters={}):
+#     name = get_name("fc_encoder", counters)
+#     print("construct", name, "...")
+#     with tf.variable_scope(name):
+#         with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
+#             outputs = dense(inputs, 10)
+#             outputs = dense(outputs, 10)
+#             outputs = dense(outputs, r_dim, nonlinearity=None)
+#             return outputs
+#
+# @add_arg_scope
+# def aggregator(r, z_dim, method=tf.reduce_mean, counters={}):
+#     name = get_name("aggregator", counters)
+#     print("construct", name, "...")
+#     with tf.variable_scope(name):
+#         r = method(r, axis=0, keepdims=True)
+#         z_mu = dense(r, z_dim, nonlinearity=None, bn=False)
+#         z_log_sigma_sq = dense(r, z_dim, nonlinearity=None, bn=False)
+#         return z_mu, z_log_sigma_sq
+#
+# @add_arg_scope
+# def conditional_decoder(x, z, is_training, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, counters={}):
+#     name = get_name("conditional_decoder", counters)
+#     print("construct", name, "...")
+#     with tf.variable_scope(name):
+#         with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
+#             batch_size = tf.shape(x)[0]
+#             z = tf.tile(z, tf.stack([batch_size, 1]))
+#             xz = tf.concat([x, z], axis=1)
+#             outputs = dense(xz, 50)
+#             outputs = dense(outputs, 50)
+#             outputs = dense(outputs, 50)
+#             outputs = dense(outputs, 1, nonlinearity=None)
+#             outputs = tf.reshape(outputs, shape=(batch_size,))
+#             return outputs

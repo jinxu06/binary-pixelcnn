@@ -25,6 +25,13 @@ def compute_gaussian_kld(z_mu, z_log_sigma_sq, output_mean=True):
         kld = tf.reduce_mean(kld)
     return kld
 
+def compute_2gaussian_kld(z_mu_pr, z_log_sigma_sq_pr, z_mu_pos, z_log_sigma_sq_pos, output_mean=True):
+    kld = 0.5 * tf.reduce_sum((z_log_sigma_sq_pr - z_log_sigma_sq_pos) + \
+        tf.exp(z_log_sigma_sq_pos - z_log_sigma_sq_pr) + \
+        tf.divide(tf.square(z_mu_pos-z_mu_pr), tf.exp(z_log_sigma_sq_pr)) - 1., axis=-1)
+    if output_mean:
+        kld = tf.reduce_mean(kld)
+    return kld
 
 def estimate_mmd(x, y, is_dimention_wise=False):
     x_kernel = compute_kernel(x, x, is_dimention_wise)

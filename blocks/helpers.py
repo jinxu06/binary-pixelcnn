@@ -12,7 +12,8 @@ def one_hot(y, num_classes):
     return r
 
 def int_shape(x):
-    return list(map(int, x.get_shape()))
+    to_int = lambda a: 0 if a.value is None else int(a)
+    return list(map(to_int, x.get_shape()))
 
 def log_sum_exp(x, axis=-1):
     return tf.reduce_logsumexp(x, axis=axis)

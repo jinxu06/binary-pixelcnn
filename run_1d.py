@@ -45,10 +45,10 @@ model_opt = {
 model = tf.make_template('model', NeuralProcess.construct)
 
 for i in range(args.nr_model):
-    with tf.device('/gpu:%d' % (i%args.nr_gpu)):
+    with tf.device('/'+ args.device_type +':%d' % (i%args.nr_gpu)):
         model(models[i], **model_opt)
 
-learner = NPLearner(session=None, parallel_models=models, optimize_op=None, train_set=train_set, eval_set=val_set, lr=args.learning_rate)
+learner = NPLearner(session=None, parallel_models=models, optimize_op=None, train_set=train_set, eval_set=val_set, variables=tf.trainable_variables(), lr=args.learning_rate, device_type=args.device_type)
 
 
 initializer = tf.global_variables_initializer()

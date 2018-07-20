@@ -59,6 +59,16 @@ def conditional_decoder(x, z, nonlinearity=None, bn=True, kernel_initializer=Non
     print("construct", name, "...")
     with tf.variable_scope(name):
         with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
+            # batch_size = tf.shape(x)[0]
+            # z = tf.tile(z, tf.stack([batch_size, 1]))
+            #
+            # outputs = dense(z, 256) + x
+            # outputs = dense(outputs, 256) + x
+            # outputs = dense(outputs, 256) + x
+            # outputs = dense(outputs, 256) + x
+            # outputs = dense(outputs, 1, nonlinearity=None, bn=False)
+            # outputs = tf.reshape(outputs, shape=(batch_size,))
+            # return outputs
             batch_size = tf.shape(x)[0]
             z = tf.tile(z, tf.stack([batch_size, 1]))
             xz = tf.concat([x, z], axis=1)
@@ -70,6 +80,11 @@ def conditional_decoder(x, z, nonlinearity=None, bn=True, kernel_initializer=Non
             outputs = dense(outputs, 1, nonlinearity=None, bn=False)
             outputs = tf.reshape(outputs, shape=(batch_size,))
             return outputs
+
+
+
+
+
 
 
 # @add_arg_scope

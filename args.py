@@ -14,6 +14,7 @@ def argument_parser():
     parser.add_argument('--pretrained', help='evaluate a pre-trained model',
                         action='store_true', default=False)
     parser.add_argument('--seed', help='random seed', default=0, type=int)
+    parser.add_argument('--device_type', help='gpu or cpu', default='gpu')
     parser.add_argument('--gpus', help='IDs of GPUs used', default='0')
     parser.add_argument('--output_dir', help='output directory', default='')
     parser.add_argument('--checkpoint_dir', help='checkpoint directory', default='')

@@ -14,20 +14,20 @@ from blocks.plots import sort_x
 
 class NPLearner(Learner):
 
-    def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None, lr=0.001):
+    def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None, lr=0.001, device_type='gpu'):
         super().__init__(session, parallel_models, optimize_op, train_set, eval_set, variables)
         self.lr = lr
 
         grads = []
         for i in range(self.nr_model):
             grads.append(self.parallel_models[i].grads)
-        with tf.device('/gpu:0'):
+        with tf.device('/' + device_type + ':0'):
             for i in range(1, self.nr_model):
                 for j in range(len(grads[0])):
                     grads[0][j] += grads[i][j]
         self.aggregated_grads = grads[0]
 
-        self.optimize_op = adam_updates(tf.trainable_variables(), self.aggregated_grads, lr=self.lr)
+        self.optimize_op = adam_updates(variables, self.aggregated_grads, lr=self.lr)
 
     def set_session(self, sess):
         self.session = sess
@@ -44,6 +44,11 @@ class NPLearner(Learner):
             total_shots = np.random.randint(low=10, high=50)
             num_shots = np.random.randint(low=8, high=total_shots-1)
             test_shots = total_shots - num_shots
+            test_shots = 0
+            #num_shots, test_shots = 20, 0
+            num_shots = np.random.randint(low=10, high=40)
+            test_shots = np.random.randint(low=5, high=20)
+            num_shots, test_shots = 20, 10
 
             X_value, y_value = task.sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -58,6 +63,7 @@ class NPLearner(Learner):
         self.get_session().run(self.optimize_op, feed_dict=feed_dict)
 
 
+
     def evaluate(self, eval_samples, num_shots, test_shots):
         ls = []
         for _ in range(eval_samples):
@@ -65,6 +71,9 @@ class NPLearner(Learner):
             total_shots = np.random.randint(low=10, high=50)
             num_shots = np.random.randint(low=8, high=total_shots-1)
             test_shots = total_shots - num_shots
+            num_shots, test_shots = 20, 10
+            #num_shots = np.random.randint(low=10, high=40)
+            #test_shots = np.random.randint(low=5, high=20)
 
             X_value, y_value = self.eval_set.sample(1)[0].sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -81,8 +90,11 @@ class NPLearner(Learner):
             sampler = self.eval_set.sample(1)[0]
             #
             total_shots = np.random.randint(low=10, high=50)
-            num_shots = np.random.randint(low=8, high=total_shots-1)
+            num_shots = np.random.randint(low=total_shots-10, high=total_shots-1)
             test_shots = total_shots - num_shots
+            num_shots = np.random.randint(low=10, high=40)
+            test_shots = np.random.randint(low=5, high=20)
+            num_shots, test_shots = 20, 10
             #
             X_value, y_value = sampler.sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -94,9 +106,9 @@ class NPLearner(Learner):
             #ax.plot(*sort_x(X_value[:,0], y_value), "+")
             for k in range(20):
                 X_eval = np.linspace(-4., 4., num=100)[:,None]
-                y_hat = m.predict(self.session, X_c_value, y_c_value, X_value, y_value) #X_eval)
-                # ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
-                ax.plot(X_value[:,0], y_hat, "-", color='gray', alpha=0.3)
+                y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval)
+                ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
+                #ax.plot(X_value[:,0], y_hat, "-", color='gray', alpha=0.3)
         fig.savefig("figs/np{0}.pdf".format(epoch))
         plt.close()
 

@@ -67,7 +67,7 @@ class NeuralProcess(object):
                 #self.z_mu_pr, self.z_log_sigma_sq_pr = aggregator(r_c, self.z_dim)
                 self.z_mu_pr, self.z_log_sigma_sq_pr, self.z_mu_pos, self.z_log_sigma_sq_pos = self.aggregator(r_ct, num_c, self.z_dim)
                 # z = gaussian_sampler(self.z_mu_pos, self.z_log_sigma_sq_pos)
-                z = self.z_mu_pos #gaussian_sampler(self.z_mu_pos, tf.exp(0.5*self.z_log_sigma_sq_pos))
+                z = gaussian_sampler(self.z_mu_pos, tf.exp(0.5*self.z_log_sigma_sq_pos))
                 z = (1-self.use_z_ph) * z + self.use_z_ph * self.z_ph
                 y_hat = self.conditional_decoder(self.X_t, z)
                 return y_hat
@@ -89,7 +89,7 @@ class NeuralProcess(object):
         z_mu, z_log_sigma_sq = sess.run([self.z_mu_pr, self.z_log_sigma_sq_pr], feed_dict=feed_dict)
         z_sigma = np.exp(0.5*z_log_sigma_sq)
         # print(z_sigma)
-        z_pr = z_mu #np.random.normal(loc=z_mu, scale=z_sigma)
+        z_pr = np.random.normal(loc=z_mu, scale=z_sigma)
         feed_dict.update({
             self.use_z_ph: True,
             self.z_ph: z_pr,
@@ -115,58 +115,5 @@ class NeuralProcess(object):
             self.y_t: y_t_value,
             self.is_training: is_training,
         }
-        # spr, spos = sess.run([self.z_log_sigma_sq_pr, self.z_log_sigma_sq_pos], feed_dict=feed_dict)
-        # print('prior', np.exp(0.5*spr)[0][:5])
-        # print('pos', np.exp(0.5*spos)[0][:5])
-        # print('prior', spr)
-        # print("pos", spos)
         l = sess.run(self.loss, feed_dict=feed_dict)
         return l
-
-
-
-
-
-
-# class NeuralProcess(object):
-#
-#     def __init__(self, counters={}):
-#         self.counters = counters
-#
-#     def construct(self, batch_size, z_dim, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
-#         self.batch_size = batch_size
-#         self.z_dim = z_dim
-#         self.X_c = tf.placeholder(tf.float32, shape=(self.batch_size, 1))
-#         self.y_c = tf.placeholder(tf.float32, shape=(self.batch_size))
-#         self.X_t = tf.placeholder(tf.float32, shape=(self.batch_size, 1))
-#         self.y_t = tf.placeholder(tf.float32, shape=(self.batch_size))
-#         self.nonlinearity = nonlinearity
-#         self.bn = bn
-#         self.kernel_initializer = kernel_initializer
-#         self.kernel_regularizer = kernel_regularizer
-#         self.is_training = tf.placeholder(tf.bool, shape=())
-#         self.use_z_ph = tf.cast(tf.placeholder_with_default(False, shape=()), dtype=tf.float32)
-#         self.z_ph = tf.placeholder_with_default(np.zeros((1, self.z_dim), dtype=np.float32), shape=(1, self.z_dim))
-#
-#         self.outputs = self._model(self.X_c, self.y_c, self.X_t, self.nonlinearity, self.bn, self.kernel_initializer, self.kernel_regularizer, self.is_training)
-#         self.predictions = self.outputs
-#         self.loss = self._loss(self.y_t, self.predictions)
-#
-#
-#     def _model(self, X_c, y_c, X_t, nonlinearity, bn, kernel_initializer, kernel_regularizer, is_training):
-#         X_y = tf.concat([X_c, y_c[:, None]], axis=1)
-#         with arg_scope([fc_encoder, conditional_decoder], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training, counters=self.counters):
-#             r = fc_encoder(X_y, r_dim=5)
-#             self.z_mu, self.z_log_sigma_sq = aggregator(r, z_dim=self.z_dim, method=tf.reduce_max)
-#             self.z_sigma = tf.exp(self.z_log_sigma_sq / 2.)
-#             z = gaussian_sampler(self.z_mu, self.z_sigma)
-#             z = (1-self.use_z_ph) * z + self.use_z_ph * self.z_ph
-#             y_hat = conditional_decoder(X_t, z)
-#             return y_hat
-#
-#
-#     def _loss(self, y_t, predictions):
-#         self.beta = 1.
-#         self.reg = compute_gaussian_kld(self.z_mu, self.z_log_sigma_sq)
-#         self.nll = tf.losses.mean_squared_error(labels=y_t, predictions=predictions)
-#         return self.nll + self.beta * self.reg

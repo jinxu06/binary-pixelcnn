@@ -67,7 +67,7 @@ class NeuralProcess(object):
                 #self.z_mu_pr, self.z_log_sigma_sq_pr = aggregator(r_c, self.z_dim)
                 self.z_mu_pr, self.z_log_sigma_sq_pr, self.z_mu_pos, self.z_log_sigma_sq_pos = self.aggregator(r_ct, num_c, self.z_dim)
                 # z = gaussian_sampler(self.z_mu_pos, self.z_log_sigma_sq_pos)
-                z = self.z_mu_pos #gaussian_sampler(self.z_mu_pos, tf.exp(0.5*self.z_log_sigma_sq_pos))
+                z = gaussian_sampler(self.z_mu_pos, tf.exp(0.5*self.z_log_sigma_sq_pos))
                 z = (1-self.use_z_ph) * z + self.use_z_ph * self.z_ph
                 y_hat = self.conditional_decoder(self.X_t, z)
                 return y_hat
@@ -89,7 +89,7 @@ class NeuralProcess(object):
         z_mu, z_log_sigma_sq = sess.run([self.z_mu_pr, self.z_log_sigma_sq_pr], feed_dict=feed_dict)
         z_sigma = np.exp(0.5*z_log_sigma_sq)
         # print(z_sigma)
-        z_pr = z_mu #np.random.normal(loc=z_mu, scale=z_sigma)
+        z_pr = np.random.normal(loc=z_mu, scale=z_sigma)
         feed_dict.update({
             self.use_z_ph: True,
             self.z_ph: z_pr,

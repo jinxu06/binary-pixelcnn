@@ -109,7 +109,7 @@ class NPLearner(Learner):
                 y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval)
                 ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
                 #ax.plot(X_value[:,0], y_hat, "-", color='gray', alpha=0.3)
-        fig.savefig("figs/np{0}.pdf".format(epoch))
+        fig.savefig("figs/np{0}-1e-5.pdf".format(epoch))
         plt.close()
 
 

@@ -18,7 +18,7 @@ class GPSampler(object):
         xs = np.random.uniform(low=self.input_range[0], high=self.input_range[1], size=num_samples)
         mean = [0 for x in xs]
         var = np.random.uniform(low=self.var_range[0], high=self.var_range[1])
-        gram = gram_matrix(xs)
+        gram = gram_matrix(xs, variance=var)
         ys = np.random.multivariate_normal(mean, gram)
         return GPFunction(xs, ys)
 
@@ -42,3 +42,6 @@ class GPFunction(object):
         assert num_samples <= self.num_samples, "num_samples exceed max_num_samples"
         p = np.random.choice(self.num_samples, size=(num_samples,), replace=False)
         return self.xs[p][:,None], self.ys[p]
+
+    def get_all_samples(self):
+        return self.xs[:,None], self.ys

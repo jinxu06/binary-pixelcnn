@@ -8,7 +8,6 @@ from blocks.layers import down_shifted_conv2d, down_right_shifted_conv2d, down_s
 from blocks.losses import bernoulli_loss
 from blocks.samplers import gaussian_sampler, mix_logistic_sampler, bernoulli_sampler
 from blocks.helpers import int_shape, broadcast_masks_tf
-from blocks.components import fc_encoder, aggregator, conditional_decoder
 from blocks.estimators import compute_2gaussian_kld
 
 
@@ -45,38 +44,54 @@ class NeuralProcess(object):
         #
         self.grads = tf.gradients(self.loss, tf.trainable_variables(), colocate_gradients_with_ops=True)
 
+
     def _model(self):
         default_args = {
-            "nonlinearity": tf.nn.relu,
-            "bn": False,
+            "nonlinearity": self.nonlinearity,
+            "bn": self.bn,
             "kernel_initializer": self.kernel_initializer,
             "kernel_regularizer": self.kernel_regularizer,
             "is_training": self.is_training,
             "counters": self.counters,
         }
-        with arg_scope([self.sample_encoder, self.aggregator, self.conditional_decoder], **default_args):
-            r_c = self.sample_encoder(self.X_c, self.y_c, self.r_dim)
-            r_t = self.sample_encoder(self.X_t, self.y_t, self.r_dim)
-            r_ct = tf.concat([r_c, r_t], axis=0)
-            self.z_mu_pr, self.z_log_sigma_sq_pr = self.aggregator(r_c, self.z_dim)
-            self.z_mu_pos, self.z_log_sigma_sq_pos = self.aggregator(r_ct, self.z_dim)
-            z = gaussian_sampler(self.z_mu_pr, self.z_log_sigma_sq_pr)
-            z = (1-self.use_z_ph) * z + self.use_z_ph * self.z_ph
-            y_hat = self.conditional_decoder(self.X_t, z)
-            return y_hat
+        with arg_scope([self.conditional_decoder], **default_args):
+            default_args.update({"bn":False})
+            with arg_scope([self.sample_encoder, self.aggregator], **default_args):
+                num_c = tf.shape(self.X_c)[0]
+                X_ct = tf.concat([self.X_c, self.X_t], axis=0)
+                y_ct = tf.concat([self.y_c, self.y_t], axis=0)
+                r_ct = self.sample_encoder(X_ct, y_ct, self.r_dim)
+                #r_c, r_t = r_ct[:, :num_c], r_ct[:, num_c:]
 
-    def _loss(self, beta=1.0):
+                #self.z_mu_pr, self.z_log_sigma_sq_pr = aggregator(r_c, self.z_dim)
+                self.z_mu_pr, self.z_log_sigma_sq_pr, self.z_mu_pos, self.z_log_sigma_sq_pos = self.aggregator(r_ct, num_c, self.z_dim)
+                z = gaussian_sampler(self.z_mu_pos, self.z_log_sigma_sq_pos)
+                z = (1-self.use_z_ph) * z + self.use_z_ph * self.z_ph
+                y_hat = self.conditional_decoder(self.X_t, z)
+                return y_hat
+
+    def _loss(self, beta=1.):
+        beta = 1#e-7
         self.reg = compute_2gaussian_kld(self.z_mu_pr, self.z_log_sigma_sq_pr, self.z_mu_pos, self.z_log_sigma_sq_pos)
-        self.nll = tf.losses.mean_squared_error(labels=self.y_t, predictions=self.y_hat)
+        self.nll = tf.reduce_mean(tf.pow((self.y_t - self.y_hat), 2), axis=0) #tf.losses.mean_squared_error(labels=self.y_t, predictions=self.y_hat)
         return self.nll + beta * self.reg
 
-    def predict(self, sess, X_c_value, y_c_value, X_t_value):
+    def predict(self, sess, X_c_value, y_c_value, X_t_value, y_t_value):
         feed_dict = {
             self.X_c: X_c_value,
             self.y_c: y_c_value,
             self.X_t: X_t_value,
+            self.y_t: y_t_value, #np.ones((X_t_value.shape[0],)),
             self.is_training: False,
         }
+        z_mu, z_log_sigma_sq = sess.run([self.z_mu_pr, self.z_log_sigma_sq_pr], feed_dict=feed_dict)
+        z_sigma = np.exp(0.5*z_log_sigma_sq)
+        # print(z_sigma)
+        z_pr = np.random.normal(loc=z_mu, scale=z_sigma)
+        feed_dict.update({
+            self.use_z_ph: True,
+            self.z_ph: z_pr,
+        })
         preds= sess.run(self.preds, feed_dict=feed_dict)
         return preds
 
@@ -98,6 +113,11 @@ class NeuralProcess(object):
             self.y_t: y_t_value,
             self.is_training: is_training,
         }
+        spr, spos = sess.run([self.z_mu_pr, self.z_mu_pos], feed_dict=feed_dict)
+        #print('prior', np.exp(0.5*spr))
+        #print('pos', np.exp(0.5*spos))
+        # print('prior', spr)
+        # print("pos", spos)
         l = sess.run(self.loss, feed_dict=feed_dict)
         return l
 

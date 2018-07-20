@@ -31,20 +31,27 @@ def fc_encoder(X, y, r_dim, nonlinearity=None, bn=True, kernel_initializer=None,
     print("construct", name, "...")
     with tf.variable_scope(name):
         with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
-            outputs = dense(inputs, 20)
-            outputs = dense(outputs, 20)
-            outputs = dense(outputs, r_dim, nonlinearity=None)
+            outputs = dense(inputs, 256)
+            outputs = dense(outputs, 256)
+            outputs = dense(outputs, 256)
+            outputs = dense(outputs, r_dim, nonlinearity=None, bn=False)
             return outputs
 
 @add_arg_scope
-def aggregator(r, z_dim, method=tf.reduce_mean, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False, counters={}):
+def aggregator(r, num_c, z_dim, method=tf.reduce_mean, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False, counters={}):
     name = get_name("aggregator", counters)
     print("construct", name, "...")
     with tf.variable_scope(name):
-        r = method(r, axis=0, keepdims=True)
-        z_mu = dense(r, z_dim, nonlinearity=None, bn=False)
-        z_log_sigma_sq = dense(r, z_dim, nonlinearity=None, bn=False)
-        return z_mu, z_log_sigma_sq
+        with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
+            r_pr = method(r[:num_c], axis=0, keepdims=True)
+            r = method(r, axis=0, keepdims=True)
+            r = tf.concat([r_pr, r], axis=0)
+            r = dense(r, 256)
+            r = dense(r, 256)
+            r = dense(r, 256)
+            z_mu = dense(r, z_dim, nonlinearity=None, bn=False)
+            z_log_sigma_sq = dense(r, z_dim, nonlinearity=None, bn=False)
+            return z_mu[:1], z_log_sigma_sq[:1], z_mu[1:], z_log_sigma_sq[1:]
 
 @add_arg_scope
 def conditional_decoder(x, z, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False, counters={}):
@@ -55,10 +62,12 @@ def conditional_decoder(x, z, nonlinearity=None, bn=True, kernel_initializer=Non
             batch_size = tf.shape(x)[0]
             z = tf.tile(z, tf.stack([batch_size, 1]))
             xz = tf.concat([x, z], axis=1)
-            outputs = dense(xz, 100)
-            outputs = dense(outputs, 100)
-            outputs = dense(outputs, 100)
-            outputs = dense(outputs, 1, nonlinearity=None)
+            outputs = dense(xz, 256)
+            outputs = dense(outputs, 256)
+            outputs = dense(outputs, 256)
+            outputs = dense(outputs, 256)
+            outputs = dense(outputs, 256)
+            outputs = dense(outputs, 1, nonlinearity=None, bn=False)
             outputs = tf.reshape(outputs, shape=(batch_size,))
             return outputs
 

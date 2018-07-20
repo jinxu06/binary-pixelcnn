@@ -12,7 +12,7 @@ def one_hot(y, num_classes):
     return r
 
 def int_shape(x):
-    to_int = lambda a: 0 if a.value is None else int(a)
+    to_int = lambda a: -1 if a.value is None else int(a)
     return list(map(to_int, x.get_shape()))
 
 def log_sum_exp(x, axis=-1):

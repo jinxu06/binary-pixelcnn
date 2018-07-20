@@ -22,23 +22,22 @@ parser = argument_parser()
 args = parser.parse_args()
 args = prepare_args(args)
 
-gpsampler = GPSampler(input_range=[-4., 4.], var_range=[1., 1.], max_num_samples=200)
+gpsampler = GPSampler(input_range=[-4., 4.], var_range=[5., 5.], max_num_samples=100)
 train_set, val_set = gpsampler, gpsampler
 
 models = [NeuralProcess(counters={}) for i in range(args.nr_model)]
 
-
-from models.neural_processes import fc_encoder, aggregator, conditional_decoder
+from blocks.components import fc_encoder, aggregator, conditional_decoder
 
 model_opt = {
     "sample_encoder": fc_encoder,
     "aggregator": aggregator,
     "conditional_decoder": conditional_decoder,
     "obs_shape": [1],
-    "r_dim": 5,
-    "z_dim": 5,
-    "nonlinearity": tf.nn.elu,
-    "bn": True,
+    "r_dim": 128,
+    "z_dim": 128,
+    "nonlinearity": tf.nn.relu,
+    "bn": False,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(),
     "kernel_regularizer":None,
 }
@@ -49,7 +48,8 @@ for i in range(args.nr_model):
     with tf.device('/gpu:%d' % (i%args.nr_gpu)):
         model(models[i], **model_opt)
 
-learner = NPLearner(session=None, parallel_models=models, optimize_op=None, train_set=train_set, eval_set=val_set)
+learner = NPLearner(session=None, parallel_models=models, optimize_op=None, train_set=train_set, eval_set=val_set, lr=args.learning_rate)
+
 
 initializer = tf.global_variables_initializer()
 saver = tf.train.Saver()
@@ -63,13 +63,15 @@ with tf.Session(config=config) as sess:
 
     learner.set_session(sess)
 
+    # summary_writer = tf.summary.FileWriter('logdir', sess.graph)
+
     run_params = {
         "num_epoch": 200,
         "eval_interval": 1,
         "save_interval": args.save_interval,
-        "eval_samples": 100,
+        "eval_samples": 1000,
         "meta_batch": args.nr_model,
-        "num_shots": 100,
-        "test_shots": 100,
+        "num_shots": 10,
+        "test_shots": 10,
     }
     learner.run(**run_params)

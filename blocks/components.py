@@ -32,8 +32,9 @@ def fc_encoder(X, y, r_dim, nonlinearity=None, bn=True, kernel_initializer=None,
     with tf.variable_scope(name):
         with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
             outputs = dense(inputs, 256)
+            outputs = nonlinearity(dense(outputs, 256, nonlinearity=None) + dense(inputs, 256, nonlinearity=None))
             outputs = dense(outputs, 256)
-            outputs = dense(outputs, 256)
+            outputs = nonlinearity(dense(outputs, 256, nonlinearity=None) + dense(inputs, 256, nonlinearity=None))
             outputs = dense(outputs, r_dim, nonlinearity=None, bn=False)
             return outputs
 

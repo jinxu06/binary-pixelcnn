@@ -14,9 +14,10 @@ from blocks.plots import sort_x
 
 class NPLearner(Learner):
 
-    def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None, lr=0.001, device_type='gpu'):
+    def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None, lr=0.001, device_type='gpu', save_dir):
         super().__init__(session, parallel_models, optimize_op, train_set, eval_set, variables)
         self.lr = lr
+        self.save_dir
 
         grads = []
         for i in range(self.nr_model):
@@ -114,7 +115,14 @@ class NPLearner(Learner):
         plt.close()
 
 
-    def run(self, num_epoch, eval_interval, save_interval, eval_samples, meta_batch, num_shots, test_shots):
+    def run(self, num_epoch, eval_interval, save_interval, eval_samples, meta_batch, num_shots, test_shots, load_params=False):
+
+        saver = tf.train.Save(self.variables)
+
+        if load_params:
+            ckpt_file = self.save_dir + '/params.ckpt'
+            print('restoring parameters from', ckpt_file)
+            saver.restore(sess, ckpt_file)
 
         self.test(9, num_shots, test_shots, epoch=0)
 
@@ -128,6 +136,9 @@ class NPLearner(Learner):
                 v = self.evaluate(eval_samples, num_shots, test_shots)
             print("Epoch {0}: {1:0.3f}s ...................".format(epoch, train_time))
             print("    Eval Loss: ", v)
-            sys.stdout.flush()
             if epoch % save_interval == 0:
+                print("\tsave figure")
                 self.test(9, num_shots, test_shots, epoch=epoch)
+                print("\tsave checkpoint")
+                saver.save(self.session, self.save_dir + '/params.ckpt')
+            sys.stdout.flush()

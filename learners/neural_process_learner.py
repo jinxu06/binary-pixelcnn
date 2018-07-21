@@ -102,14 +102,14 @@ class NPLearner(Learner):
             m = self.parallel_models[0]
             X_gt, y_gt = sampler.get_all_samples()
             ax.plot(*sort_x(X_gt[:,0], y_gt), "-")
-            ax.scatter(X_value[:,0], y_value)
+            ax.scatter(X_c_value[:,0], y_c_value)
             #ax.plot(*sort_x(X_value[:,0], y_value), "+")
             for k in range(20):
                 X_eval = np.linspace(-2., 2., num=100)[:,None]
                 y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval)
                 ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
                 #ax.plot(X_value[:,0], y_hat, "-", color='gray', alpha=0.3)
-        fig.savefig("figs/np{0}-concat.pdf".format(epoch))
+        fig.savefig("figs/np{0}-1.pdf".format(epoch))
         plt.close()
 
 

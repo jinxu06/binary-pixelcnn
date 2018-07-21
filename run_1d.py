@@ -23,8 +23,8 @@ args = parser.parse_args()
 args = prepare_args(args)
 
 data = np.load("gpsamples_var05.npz")
-train_data = {"xs":data['xs'][:5000], "ys":data['ys'][:5000]}
-val_data = {"xs":data['xs'][5000:6000], "ys":data['ys'][5000:6000]}
+train_data = {"xs":data['xs'][:50000], "ys":data['ys'][:50000]}
+val_data = {"xs":data['xs'][50000:60000], "ys":data['ys'][50000:60000]}
 train_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=train_data)
 val_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=val_data)
 

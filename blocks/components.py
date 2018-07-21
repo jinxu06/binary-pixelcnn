@@ -35,6 +35,7 @@ def fc_encoder(X, y, r_dim, nonlinearity=None, bn=True, kernel_initializer=None,
             outputs = nonlinearity(dense(outputs, 256, nonlinearity=None) + dense(inputs, 256, nonlinearity=None))
             outputs = dense(outputs, 256)
             outputs = nonlinearity(dense(outputs, 256, nonlinearity=None) + dense(inputs, 256, nonlinearity=None))
+            outputs = dense(outputs, 256)
             outputs = dense(outputs, r_dim, nonlinearity=None, bn=False)
             return outputs
 

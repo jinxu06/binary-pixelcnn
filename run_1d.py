@@ -70,8 +70,8 @@ with tf.Session(config=config) as sess:
     # summary_writer = tf.summary.FileWriter('logdir', sess.graph)
 
     run_params = {
-        "num_epoch": 200,
-        "eval_interval": 1,
+        "num_epoch": 500,
+        "eval_interval": 5,
         "save_interval": args.save_interval,
         "eval_samples": 1000,
         "meta_batch": args.nr_model,

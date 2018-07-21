@@ -96,7 +96,8 @@ class NPLearner(Learner):
             #num_shots = np.random.randint(low=1, high=30)
             #test_shots = np.random.randint(low=1, high=10)
             # num_shots, test_shots = 20, 10
-            num_shots = np.random.randint(low=0, high=5) * 10 + 1
+            c = [1, 10, 20, 100]
+            num_shots = c[(i/%4)]
             #
             X_value, y_value = sampler.sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]

@@ -31,9 +31,10 @@ def fc_encoder(X, y, r_dim, nonlinearity=None, bn=True, kernel_initializer=None,
     print("construct", name, "...")
     with tf.variable_scope(name):
         with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
-            size = 512
+            size = 256
             outputs = dense(inputs, size)
             outputs = nonlinearity(dense(outputs, size, nonlinearity=None) + dense(inputs, size, nonlinearity=None))
+            inputs = outputs
             outputs = dense(outputs, size)
             outputs = nonlinearity(dense(outputs, size, nonlinearity=None) + dense(inputs, size, nonlinearity=None))
             outputs = dense(outputs, size)
@@ -63,11 +64,12 @@ def conditional_decoder(x, z, nonlinearity=None, bn=True, kernel_initializer=Non
     print("construct", name, "...")
     with tf.variable_scope(name):
         with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
-            size = 512
+            size = 256
             batch_size = tf.shape(x)[0]
             x = tf.tile(x, tf.stack([1, int_shape(z)[1]]))
             z = tf.tile(z, tf.stack([batch_size, 1]))
-            xz = x + z * tf.get_variable(name="coeff", shape=(), dtype=tf.float32, initializer=tf.constant_initializer(2.0))
+            # xz = x + z * tf.get_variable(name="coeff", shape=(), dtype=tf.float32, initializer=tf.constant_initializer(2.0))
+            xz = x
             a = dense(xz, size, nonlinearity=None) + dense(z, size, nonlinearity=None)
             outputs = tf.nn.tanh(a) * tf.sigmoid(a)
 

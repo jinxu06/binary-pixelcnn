@@ -17,7 +17,7 @@ class NPLearner(Learner):
     def __init__(self, session, parallel_models, optimize_op, train_set=None, eval_set=None, variables=None, lr=0.001, device_type='gpu', save_dir="test"):
         super().__init__(session, parallel_models, optimize_op, train_set, eval_set, variables)
         self.lr = lr
-        self.save_dir
+        self.save_dir = save_dir
 
         grads = []
         for i in range(self.nr_model):

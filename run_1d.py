@@ -22,8 +22,11 @@ parser = argument_parser()
 args = parser.parse_args()
 args = prepare_args(args)
 
-gpsampler = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=100)
-train_set, val_set = gpsampler, gpsampler
+data = np.load("gpsamples_var05.npz")
+train_data = {"xs":data['xs'][:5000], "ys":data['ys'][:5000]}
+val_data = {"xs":data['xs'][5000:6000], "ys":data['ys'][5000:6000]}
+train_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=train_data)
+val_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=val_data)
 
 models = [NeuralProcess(counters={}) for i in range(args.nr_model)]
 
@@ -34,8 +37,8 @@ model_opt = {
     "aggregator": aggregator,
     "conditional_decoder": conditional_decoder,
     "obs_shape": [1],
-    "r_dim": 128,
-    "z_dim": 128,
+    "r_dim": 256,
+    "z_dim": 256,
     "nonlinearity": tf.nn.relu,
     "bn": False,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(uniform=False),

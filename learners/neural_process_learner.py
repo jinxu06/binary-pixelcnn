@@ -46,8 +46,8 @@ class NPLearner(Learner):
             test_shots = total_shots - num_shots
             # test_shots = 0
             # #num_shots, test_shots = 20, 0
-            num_shots = np.random.randint(low=10, high=40)
-            test_shots = np.random.randint(low=5, high=20)
+            num_shots = np.random.randint(low=1, high=30)
+            test_shots = np.random.randint(low=1, high=10)
             # num_shots, test_shots = 20, 10
 
             X_value, y_value = task.sample(num_shots+test_shots)
@@ -72,8 +72,8 @@ class NPLearner(Learner):
             num_shots = np.random.randint(low=8, high=total_shots-1)
             test_shots = total_shots - num_shots
             # num_shots, test_shots = 20, 10
-            num_shots = np.random.randint(low=10, high=40)
-            test_shots = np.random.randint(low=5, high=20)
+            num_shots = np.random.randint(low=1, high=30)
+            test_shots = np.random.randint(low=1, high=10)
 
             X_value, y_value = self.eval_set.sample(1)[0].sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -92,8 +92,8 @@ class NPLearner(Learner):
             # total_shots = np.random.randint(low=10, high=50)
             # num_shots = np.random.randint(low=total_shots-10, high=total_shots-1)
             # test_shots = total_shots - num_shots
-            num_shots = np.random.randint(low=10, high=40)
-            test_shots = np.random.randint(low=5, high=20)
+            num_shots = np.random.randint(low=1, high=30)
+            test_shots = np.random.randint(low=1, high=10)
             # num_shots, test_shots = 20, 10
             #
             X_value, y_value = sampler.sample(num_shots+test_shots)
@@ -105,7 +105,7 @@ class NPLearner(Learner):
             ax.scatter(X_value[:,0], y_value)
             #ax.plot(*sort_x(X_value[:,0], y_value), "+")
             for k in range(20):
-                X_eval = np.linspace(-4., 4., num=100)[:,None]
+                X_eval = np.linspace(-2., 2., num=100)[:,None]
                 y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval)
                 ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
                 #ax.plot(X_value[:,0], y_hat, "-", color='gray', alpha=0.3)

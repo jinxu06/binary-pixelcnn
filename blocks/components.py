@@ -88,11 +88,11 @@ def conditional_decoder(x, z, nonlinearity=None, bn=True, kernel_initializer=Non
             batch_size = tf.shape(x)[0]
             z = tf.tile(z, tf.stack([batch_size, 1]))
             xz = tf.concat([x, z], axis=1)
-            outputs = dense(xz, 256)
-            outputs = dense(outputs, 256)
-            outputs = dense(outputs, 256)
-            outputs = dense(outputs, 256)
-            outputs = dense(outputs, 256)
+            outputs = dense(xz, 512)
+            outputs = dense(outputs, 512)
+            outputs = dense(outputs, 512)
+            outputs = dense(outputs, 512)
+            outputs = dense(outputs, 512)
             outputs = dense(outputs, 1, nonlinearity=None, bn=False)
             outputs = tf.reshape(outputs, shape=(batch_size,))
             return outputs

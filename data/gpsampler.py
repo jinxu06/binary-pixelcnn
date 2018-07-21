@@ -5,13 +5,19 @@ import tensorflow as tf
 
 class GPSampler(object):
 
-    def __init__(self, input_range, var_range, max_num_samples=200):
+    def __init__(self, input_range, var_range, max_num_samples=200, data=None):
         self.input_range = input_range
         self.var_range = var_range
         self.max_num_samples = max_num_samples
+        self.data = data
+        if data is not None:
+            self.num_samples = self.data['xs'].shape[0]
 
     def sample(self, num):
-        return [self._sample_function(self.max_num_samples) for i in range(num)]
+        if self.data is None:
+            return [self._sample_function(self.max_num_samples) for i in range(num)]
+        p = np.random.choice(self.num_samples, size=(num), replace=False)
+        return [GPFunction(xs=self.data['xs'][i][:,0], ys=self.data['ys'][i]) for i in p]
 
 
     def _sample_function(self, num_samples):

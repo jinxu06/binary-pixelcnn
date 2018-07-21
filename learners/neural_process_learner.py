@@ -117,7 +117,7 @@ class NPLearner(Learner):
 
     def run(self, num_epoch, eval_interval, save_interval, eval_samples, meta_batch, num_shots, test_shots, load_params=False):
 
-        saver = tf.train.Save(self.variables)
+        saver = tf.train.Saver(var_list=self.variables)
 
         if load_params:
             ckpt_file = self.save_dir + '/params.ckpt'

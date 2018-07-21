@@ -133,10 +133,10 @@ class NPLearner(Learner):
             for k in range(1000):
                 self.train(meta_batch, num_shots, test_shots)
             train_time = self.qclock()
+            print("Epoch {0}: {1:0.3f}s ...................".format(epoch, train_time))
             if epoch % eval_interval == 0:
                 v = self.evaluate(eval_samples, num_shots, test_shots)
-            print("Epoch {0}: {1:0.3f}s ...................".format(epoch, train_time))
-            print("    Eval Loss: ", v)
+                print("    Eval Loss: ", v)
             if epoch % save_interval == 0:
                 print("\tsave figure")
                 self.test(9, num_shots, test_shots, epoch=epoch)

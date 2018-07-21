@@ -59,6 +59,16 @@ def conditional_decoder(x, z, nonlinearity=None, bn=True, kernel_initializer=Non
     print("construct", name, "...")
     with tf.variable_scope(name):
         with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
+            batch_size = tf.shape(x)[0]
+            z = tf.tile(z, tf.stack([batch_size, 1]))
+            outputs = nonlinearity(dense(x, 256, nonlinearity=None) + dense(z, 256, nonlinearity=None))
+
+            for k in range(3):
+                outputs = nonlinearity(dense(outputs, 256, nonlinearity=None) + dense(z, 256, nonlinearity=None))
+            outputs = dense(outputs, 1, nonlinearity=None, bn=False)
+            outputs = tf.reshape(outputs, shape=(batch_size,))
+            return outputs
+
             # x = tf.tile(x, tf.stack([1, int_shape(z)[1]]))
             # batch_size = tf.shape(x)[0]
             # z = tf.tile(z, tf.stack([batch_size, 1]))
@@ -85,17 +95,17 @@ def conditional_decoder(x, z, nonlinearity=None, bn=True, kernel_initializer=Non
             # return outputs
 
 
-            batch_size = tf.shape(x)[0]
-            z = tf.tile(z, tf.stack([batch_size, 1]))
-            xz = tf.concat([x, z], axis=1)
-            outputs = dense(xz, 512)
-            outputs = dense(outputs, 512)
-            outputs = dense(outputs, 512)
-            outputs = dense(outputs, 512)
-            outputs = dense(outputs, 512)
-            outputs = dense(outputs, 1, nonlinearity=None, bn=False)
-            outputs = tf.reshape(outputs, shape=(batch_size,))
-            return outputs
+            # batch_size = tf.shape(x)[0]
+            # z = tf.tile(z, tf.stack([batch_size, 1]))
+            # xz = tf.concat([x, z], axis=1)
+            # outputs = dense(xz, 512)
+            # outputs = dense(outputs, 512)
+            # outputs = dense(outputs, 512)
+            # outputs = dense(outputs, 512)
+            # outputs = dense(outputs, 512)
+            # outputs = dense(outputs, 1, nonlinearity=None, bn=False)
+            # outputs = tf.reshape(outputs, shape=(batch_size,))
+            # return outputs
 
 
 

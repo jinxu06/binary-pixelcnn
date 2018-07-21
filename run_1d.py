@@ -40,7 +40,7 @@ model_opt = {
     "r_dim": 256,
     "z_dim": 256,
     "nonlinearity": tf.nn.relu,
-    "bn": True,
+    "bn": False,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(uniform=False),
     "kernel_regularizer":None,
 }

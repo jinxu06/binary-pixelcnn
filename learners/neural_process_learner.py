@@ -122,7 +122,7 @@ class NPLearner(Learner):
         if load_params:
             ckpt_file = self.save_dir + '/params.ckpt'
             print('restoring parameters from', ckpt_file)
-            saver.restore(sess, ckpt_file)
+            saver.restore(self.session, ckpt_file)
 
         self.test(9, num_shots, test_shots, epoch=0)
 

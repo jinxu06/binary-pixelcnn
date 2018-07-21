@@ -60,9 +60,10 @@ def conditional_decoder(x, z, nonlinearity=None, bn=True, kernel_initializer=Non
     with tf.variable_scope(name):
         with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
             batch_size = tf.shape(x)[0]
-            x = tf.tile(x, tf.stack([1, int_shape(z)[1]])) ##
+            x = tf.tile(x, tf.stack([1, int_shape(z)[1]]))
             z = tf.tile(z, tf.stack([batch_size, 1]))
-            a = dense(x, 256, nonlinearity=None) + dense(z, 256, nonlinearity=None)
+            xz = x + z * tf.get_variable(name="coeff", shape=(), dtype=tf.float32, initializer=tf.constant_initializer(2.0))
+            a = dense(xz, 256, nonlinearity=None) + dense(z, 256, nonlinearity=None)
             outputs = tf.nn.tanh(a) * tf.sigmoid(a)
 
             for k in range(4):

@@ -77,6 +77,6 @@ with tf.Session(config=config) as sess:
         "meta_batch": args.nr_model,
         "num_shots": 10,
         "test_shots": 10,
-        "load_params": False,
+        "load_params": args.load_params,
     }
     learner.run(**run_params)

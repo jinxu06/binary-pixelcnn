@@ -62,7 +62,7 @@ def conditional_decoder(x, z, nonlinearity=None, bn=True, kernel_initializer=Non
             x = tf.tile(x, tf.stack([1, int_shape(z)[1]]))
             batch_size = tf.shape(x)[0]
             z = tf.tile(z, tf.stack([batch_size, 1]))
-            xz = x + z * tf.get_variable(name="coeff", shape=(), dtype=tf.float32, initializer=tf.tf.constant_initializer(2.0))
+            xz = x + z * tf.get_variable(name="coeff", shape=(), dtype=tf.float32, initializer=tf.constant_initializer(2.0))
             outputs = dense(xz, 512)
             outputs = dense(outputs, 512)
             outputs = dense(outputs, 512)

@@ -46,8 +46,8 @@ class NPLearner(Learner):
             test_shots = total_shots - num_shots
             # test_shots = 0
             # #num_shots, test_shots = 20, 0
-            # num_shots = np.random.randint(low=10, high=40)
-            # test_shots = np.random.randint(low=5, high=20)
+            num_shots = np.random.randint(low=10, high=40)
+            test_shots = np.random.randint(low=5, high=20)
             # num_shots, test_shots = 20, 10
 
             X_value, y_value = task.sample(num_shots+test_shots)
@@ -72,8 +72,8 @@ class NPLearner(Learner):
             num_shots = np.random.randint(low=8, high=total_shots-1)
             test_shots = total_shots - num_shots
             # num_shots, test_shots = 20, 10
-            #num_shots = np.random.randint(low=10, high=40)
-            #test_shots = np.random.randint(low=5, high=20)
+            num_shots = np.random.randint(low=10, high=40)
+            test_shots = np.random.randint(low=5, high=20)
 
             X_value, y_value = self.eval_set.sample(1)[0].sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -89,11 +89,11 @@ class NPLearner(Learner):
             ax = fig.add_subplot(a,a,i+1)
             sampler = self.eval_set.sample(1)[0]
             #
-            total_shots = np.random.randint(low=10, high=50)
-            num_shots = np.random.randint(low=total_shots-10, high=total_shots-1)
-            test_shots = total_shots - num_shots
-            # num_shots = np.random.randint(low=10, high=40)
-            # test_shots = np.random.randint(low=5, high=20)
+            # total_shots = np.random.randint(low=10, high=50)
+            # num_shots = np.random.randint(low=total_shots-10, high=total_shots-1)
+            # test_shots = total_shots - num_shots
+            num_shots = np.random.randint(low=10, high=40)
+            test_shots = np.random.randint(low=5, high=20)
             # num_shots, test_shots = 20, 10
             #
             X_value, y_value = sampler.sample(num_shots+test_shots)

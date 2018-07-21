@@ -22,7 +22,7 @@ parser = argument_parser()
 args = parser.parse_args()
 args = prepare_args(args)
 
-gpsampler = GPSampler(input_range=[-4., 4.], var_range=[5., 5.], max_num_samples=100)
+gpsampler = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=100)
 train_set, val_set = gpsampler, gpsampler
 
 models = [NeuralProcess(counters={}) for i in range(args.nr_model)]
@@ -38,7 +38,7 @@ model_opt = {
     "z_dim": 128,
     "nonlinearity": tf.nn.relu,
     "bn": False,
-    "kernel_initializer": tf.contrib.layers.xavier_initializer(),
+    "kernel_initializer": tf.contrib.layers.xavier_initializer(uniform=False),
     "kernel_regularizer":None,
 }
 

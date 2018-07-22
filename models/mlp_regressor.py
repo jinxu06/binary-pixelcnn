@@ -50,7 +50,7 @@ class MLPRegressor(object):
         with arg_scope([self.mlp], **default_args):
             y_hat = self.mlp(self.X_c, scope='mlp')
             vars = get_trainable_variables(['mlp'])
-            for k in range(2):
+            for k in range(3):
                 loss = tf.losses.mean_squared_error(labels=self.y_c, predictions=y_hat)
                 grads = tf.gradients(loss, vars, colocate_gradients_with_ops=True)
                 vars = [v - 0.1 * g for v, g in zip(vars, grads)]

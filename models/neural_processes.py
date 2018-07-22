@@ -115,9 +115,10 @@ class NeuralProcess(object):
             self.y_t: y_t_value,
             self.is_training: is_training,
         }
-        # spr, spos = sess.run([self.z_log_sigma_sq_pr, self.z_log_sigma_sq_pos], feed_dict=feed_dict)
-        # print('prior', np.exp(0.5*spr)[0][:5])
-        # print('pos', np.exp(0.5*spos)[0][:5])
+        spr, spos = sess.run([self.z_log_sigma_sq_pr, self.z_log_sigma_sq_pos], feed_dict=feed_dict)
+        print('prior', np.exp(0.5*spr)[0][:])
+        print('pos', np.exp(0.5*spos)[0][:])
+        quit()
         # print('prior', spr)
         # print("pos", spos)
         l = sess.run(self.loss, feed_dict=feed_dict)

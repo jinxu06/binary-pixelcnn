@@ -75,7 +75,7 @@ class NeuralProcess(object):
     def _loss(self, beta=1.):
         beta = 1 #e-7
         self.reg = compute_2gaussian_kld(self.z_mu_pr, self.z_log_sigma_sq_pr, self.z_mu_pos, self.z_log_sigma_sq_pos)
-        self.nll = tf.reduce_mean(tf.pow((self.y_t - self.y_hat), 2), axis=0) #tf.losses.mean_squared_error(labels=self.y_t, predictions=self.y_hat)
+        self.nll = tf.reduce_sum(tf.pow((self.y_t - self.y_hat), 2), axis=0) #tf.losses.mean_squared_error(labels=self.y_t, predictions=self.y_hat)
         return self.nll + beta * self.reg
 
     def predict(self, sess, X_c_value, y_c_value, X_t_value):

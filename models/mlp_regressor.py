@@ -59,7 +59,7 @@ class MLPRegressor(object):
             return y_hat_test
 
     def _loss(self):
-        return tf.losses.mean_squared_error(labels=self.y_c, predictions=self.preds)
+        return tf.losses.mean_squared_error(labels=self.y_t, predictions=self.preds)
 
 
     def predict(self, sess, X_c_value, y_c_value, X_t_value):

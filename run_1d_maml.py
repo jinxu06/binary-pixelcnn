@@ -15,6 +15,7 @@ from data.dataset import Dataset
 from data.gpsampler import GPSampler
 
 from models.mlp_regressor import MLPRegressor, mlp
+from learners.neural_process_learner import NPLearner
 
 
 parser = argument_parser()

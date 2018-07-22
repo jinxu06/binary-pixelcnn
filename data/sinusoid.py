@@ -18,7 +18,7 @@ class Sinusoid(object):
             phase = np.random.uniform(self.phase_range[0], self.phase_range[1])
             period = np.random.uniform(self.period_range[0], self.period_range[1])
             sines.append(SineWave(amp, phase, period, self.input_range))
-        return sines 
+        return sines
 
 
 class SineWave(object):
@@ -36,9 +36,20 @@ class SineWave(object):
         y = self.amp * np.sin( 2*np.pi*(X - self.phase) / self.period )
         return y
 
+    # def sample(self, num_samples):
+    #     inputs = np.random.uniform(self.input_range[0], self.input_range[1], [num_samples,1])
+    #     outputs = self.amp * np.sin( 2*np.pi*(inputs - self.phase) / self.period )
+    #     samples = np.concatenate([inputs, outputs], axis=-1)
+    #     np.random.shuffle(samples)
+    #     return samples
+
     def sample(self, num_samples):
-        inputs = np.random.uniform(self.input_range[0], self.input_range[1], [num_samples,1])
-        outputs = self.amp * np.sin( 2*np.pi*(inputs - self.phase) / self.period )
-        samples = np.concatenate([inputs, outputs], axis=-1)
-        np.random.shuffle(samples)
-        return samples
+        xs = np.random.uniform(self.input_range[0], self.input_range[1], [num_samples,1])
+        ys = self.amp * np.sin( 2*np.pi*(xs[:, 0] - self.phase) / self.period )
+        p = np.random.permutation(num_samples)
+        xs = xs[p]
+        ys = ys[p]
+        return xs, ys 
+
+    def get_all_samples(self):
+        return self.sample(200)

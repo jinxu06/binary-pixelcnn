@@ -42,7 +42,7 @@ class MAMLLearner(Learner):
         feed_dict = {}
         for i, task in enumerate(tasks):
 
-            num_shots, test_shots = 20, 10
+            num_shots, test_shots = 10, 10
 
             X_value, y_value = task.sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -62,7 +62,7 @@ class MAMLLearner(Learner):
         ls = []
         for _ in range(eval_samples):
 
-            num_shots, test_shots = 20, 10
+            num_shots, test_shots = 10, 10
 
             X_value, y_value = self.eval_set.sample(1)[0].sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -82,7 +82,7 @@ class MAMLLearner(Learner):
             c = [1, 4, 8, 16, 32, 64]
             num_shots = c[(i%6)]
 
-            num_shots = 20
+            num_shots = 10
 
             X_value, y_value = sampler.sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -97,7 +97,7 @@ class MAMLLearner(Learner):
                 y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval)
                 ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
                 #ax.plot(X_value[:,0], y_hat, "-", color='gray', alpha=0.3)
-        fig.savefig("figs/np{0}-1.pdf".format(epoch))
+        fig.savefig("figs/maml-{0}.pdf".format(epoch))
         plt.close()
 
 

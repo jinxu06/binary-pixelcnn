@@ -124,7 +124,9 @@ class NeuralProcess(object):
         #     print('prior', spr[i][:])
         #     print('pos', spos[i][:])
         r_ct = sess.run(self.r_ct, feed_dict=feed_dict)
-        print(r_ct)
+        print(r_ct.shape)
+        print(r_ct.mean(0))
+        print(r_ct.mean(1))
 
 
         # print('prior', spr)

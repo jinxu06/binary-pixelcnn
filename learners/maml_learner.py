@@ -42,7 +42,8 @@ class MAMLLearner(Learner):
         feed_dict = {}
         for i, task in enumerate(tasks):
 
-            num_shots, test_shots = 10, 10
+            num_shots = np.random.randint(low=1, high=30)
+            test_shots = np.random.randint(low=1, high=10)
 
             X_value, y_value = task.sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -62,7 +63,8 @@ class MAMLLearner(Learner):
         ls = []
         for _ in range(eval_samples):
 
-            num_shots, test_shots = 10, 10
+            num_shots = np.random.randint(low=1, high=30)
+            test_shots = np.random.randint(low=1, high=10)
 
             X_value, y_value = self.eval_set.sample(1)[0].sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -82,8 +84,6 @@ class MAMLLearner(Learner):
             c = [1, 4, 8, 16, 32, 64]
             num_shots = c[(i%6)]
 
-            num_shots = 10
-
             X_value, y_value = sampler.sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
             y_c_value, y_t_value = y_value[:num_shots], y_value[num_shots:]
@@ -92,7 +92,7 @@ class MAMLLearner(Learner):
             ax.plot(*sort_x(X_gt[:,0], y_gt), "-")
             ax.scatter(X_c_value[:,0], y_c_value)
             #ax.plot(*sort_x(X_value[:,0], y_value), "+")
-            for k in range(20):
+            for k in range(1):
                 X_eval = np.linspace(-2., 2., num=100)[:,None]
                 y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval)
                 ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)

@@ -6,6 +6,7 @@ import numpy as np
 class Sinusoid(object):
 
     def __init__(self, amp_range, phase_range, period_range=[2*np.pi, 2*np.pi], input_range=[-5, 5]):
+        self.dataset_name = "sinusoid"
         self.amp_range = amp_range
         self.phase_range = phase_range
         self.period_range = period_range
@@ -49,7 +50,7 @@ class SineWave(object):
         p = np.random.permutation(num_samples)
         xs = xs[p]
         ys = ys[p]
-        return xs, ys 
+        return xs, ys
 
     def get_all_samples(self):
         return self.sample(200)

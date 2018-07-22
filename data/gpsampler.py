@@ -6,6 +6,7 @@ import tensorflow as tf
 class GPSampler(object):
 
     def __init__(self, input_range, var_range, max_num_samples=200, data=None):
+        self.dataset_name = 'gpsamples'
         self.input_range = input_range
         self.var_range = var_range
         self.max_num_samples = max_num_samples

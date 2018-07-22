@@ -44,7 +44,7 @@ class MAMLLearner(Learner):
 
             num_shots = np.random.randint(low=1, high=30)
             test_shots = np.random.randint(low=1, high=10)
-            num_shots, test_shots = 10, 10 
+            num_shots, test_shots = 10, 10
 
             X_value, y_value = task.sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -75,7 +75,7 @@ class MAMLLearner(Learner):
             ls.append(l)
         return np.mean(ls)
 
-    def test(self, num_function, num_shots, test_shots, epoch=1):
+    def test(self, num_function, num_shots, test_shots, epoch=1, input_range=(-2., 2.)):
         fig = plt.figure(figsize=(10,10))
         # a = int(np.sqrt(num_function))
         for i in range(num_function):
@@ -95,11 +95,11 @@ class MAMLLearner(Learner):
             ax.scatter(X_c_value[:,0], y_c_value)
             #ax.plot(*sort_x(X_value[:,0], y_value), "+")
             for k in range(1):
-                X_eval = np.linspace(-2., 2., num=100)[:,None]
+                X_eval = np.linspace(self.eval_set.input_range[0], self.eval_set.input_range[1], num=100)[:,None]
                 y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval)
                 ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
                 #ax.plot(X_value[:,0], y_hat, "-", color='gray', alpha=0.3)
-        fig.savefig("figs/maml-{0}.pdf".format(epoch))
+        fig.savefig("figs/maml-{0}-{1}.pdf".format(self.eval_set.dataset_name, epoch))
         plt.close()
 
 

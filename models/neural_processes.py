@@ -40,7 +40,7 @@ class NeuralProcess(object):
         #
         self.y_hat = self._model()
         self.preds = self.y_hat
-        self.loss = self._loss()
+        self.loss = self._loss(beta=1.0, y_sigma=0.2)
         #
         self.grads = tf.gradients(self.loss, tf.trainable_variables(), colocate_gradients_with_ops=True)
 
@@ -72,11 +72,10 @@ class NeuralProcess(object):
                 y_hat = self.conditional_decoder(self.X_t, z)
                 return y_hat
 
-    def _loss(self, beta=1.):
-        beta = 1 #e-7
+    def _loss(self, beta=1., y_sigma=1./np.sqrt(2)):
         self.reg = compute_2gaussian_kld(self.z_mu_pr, self.z_log_sigma_sq_pr, self.z_mu_pos, self.z_log_sigma_sq_pos)
         self.nll = tf.reduce_sum(tf.pow((self.y_t - self.y_hat), 2), axis=0) #tf.losses.mean_squared_error(labels=self.y_t, predictions=self.y_hat)
-        return self.nll + beta * self.reg
+        return self.nll / (2*y_sigma**2) + beta * self.reg
 
     def predict(self, sess, X_c_value, y_c_value, X_t_value):
         feed_dict = {

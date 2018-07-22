@@ -62,6 +62,30 @@ class MLPRegressor(object):
         return tf.losses.mean_squared_error(labels=self.y_c, predictions=self.preds)
 
 
+    def predict(self, sess, X_c_value, y_c_value, X_t_value):
+        feed_dict = {
+            self.X_c: X_c_value,
+            self.y_c: y_c_value,
+            self.X_t: X_t_value,
+            self.y_t: np.zeros((X_t_value.shape[0],)),
+            self.is_training: False,
+        }
+        preds= sess.run(self.preds, feed_dict=feed_dict)
+        return preds
+
+
+    def compute_loss(self, sess, X_c_value, y_c_value, X_t_value, y_t_value, is_training):
+        feed_dict = {
+            self.X_c: X_c_value,
+            self.y_c: y_c_value,
+            self.X_t: X_t_value,
+            self.y_t: y_t_value,
+            self.is_training: is_training,
+        }
+        l = sess.run(self.loss, feed_dict=feed_dict)
+        return l
+
+
 
 from blocks.layers_beta import dense
 @add_arg_scope

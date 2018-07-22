@@ -44,6 +44,7 @@ class MAMLLearner(Learner):
 
             num_shots = np.random.randint(low=1, high=30)
             test_shots = np.random.randint(low=1, high=10)
+            num_shots, test_shots = 10, 10 
 
             X_value, y_value = task.sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -65,6 +66,7 @@ class MAMLLearner(Learner):
 
             num_shots = np.random.randint(low=1, high=30)
             test_shots = np.random.randint(low=1, high=10)
+            num_shots, test_shots = 10, 10
 
             X_value, y_value = self.eval_set.sample(1)[0].sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]

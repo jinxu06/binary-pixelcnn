@@ -84,10 +84,11 @@ class NPLearner(Learner):
         return np.mean(ls)
 
     def test(self, num_function, num_shots, test_shots, epoch=1):
-        fig = plt.figure(figsize=(10,6))
-        a = int(np.sqrt(num_function))
+        fig = plt.figure(figsize=(10,10))
+        # a = int(np.sqrt(num_function))
         for i in range(num_function):
-            ax = fig.add_subplot(a,a,i+1)
+            # ax = fig.add_subplot(a,a,i+1)
+            ax = fig.add_subplot(4,3,i+1)
             sampler = self.eval_set.sample(1)[0]
             #
             # total_shots = np.random.randint(low=10, high=50)
@@ -96,8 +97,8 @@ class NPLearner(Learner):
             #num_shots = np.random.randint(low=1, high=30)
             #test_shots = np.random.randint(low=1, high=10)
             # num_shots, test_shots = 20, 10
-            c = [1, 10, 20, 100]
-            num_shots = c[(i%4)]
+            c = [1, 4, 8, 16, 32, 64]
+            num_shots = c[(i%6)]
             #
             X_value, y_value = sampler.sample(num_shots+test_shots)
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
@@ -117,7 +118,7 @@ class NPLearner(Learner):
 
 
     def run(self, num_epoch, eval_interval, save_interval, eval_samples, meta_batch, num_shots, test_shots, load_params=False):
-
+        num_figures = 12
         saver = tf.train.Saver(var_list=self.variables)
 
         if load_params:
@@ -125,7 +126,7 @@ class NPLearner(Learner):
             print('restoring parameters from', ckpt_file)
             saver.restore(self.session, ckpt_file)
 
-        self.test(9, num_shots, test_shots, epoch=0)
+        self.test(num_figures, num_shots, test_shots, epoch=0)
 
         for epoch in range(1, num_epoch+1):
 
@@ -139,7 +140,7 @@ class NPLearner(Learner):
                 print("    Eval Loss: ", v)
             if epoch % save_interval == 0:
                 print("\tsave figure")
-                self.test(9, num_shots, test_shots, epoch=epoch)
+                self.test(num_figures, num_shots, test_shots, epoch=epoch)
                 print("\tsave checkpoint")
                 saver.save(self.session, self.save_dir + '/params.ckpt')
             sys.stdout.flush()

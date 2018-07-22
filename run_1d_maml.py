@@ -22,11 +22,14 @@ parser = argument_parser()
 args = parser.parse_args()
 args = prepare_args(args)
 
-data = np.load("gpsamples_var05.npz")
-train_data = {"xs":data['xs'][:50000], "ys":data['ys'][:50000]}
-val_data = {"xs":data['xs'][50000:60000], "ys":data['ys'][50000:60000]}
-train_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=train_data)
-val_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=val_data)
+# data = np.load("gpsamples_var05.npz")
+# train_data = {"xs":data['xs'][:50000], "ys":data['ys'][:50000]}
+# val_data = {"xs":data['xs'][50000:60000], "ys":data['ys'][50000:60000]}
+# train_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=train_data)
+# val_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=val_data)
+
+train_set = Sinusoid(amp_range=[0.1, 5.0], phase_range=[0, np.pi], period_range=[2*np.pi, 2*np.pi], input_range=[-5., 5.])
+val_set = train_set
 
 
 models = [MLPRegressor(counters={}) for i in range(args.nr_model)]
@@ -46,7 +49,7 @@ for i in range(args.nr_model):
     with tf.device('/'+ args.device_type +':%d' % (i%args.nr_gpu)):
         model(models[i], **model_opt)
 
-save_dir = "/data/ziz/jxu/maml/test"
+save_dir = "/data/ziz/jxu/maml/test-sinusoid"
 learner = MAMLLearner(session=None, parallel_models=models, optimize_op=None, train_set=train_set, eval_set=val_set, variables=tf.trainable_variables(), lr=args.learning_rate, device_type=args.device_type, save_dir=save_dir)
 
 

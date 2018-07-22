@@ -36,7 +36,7 @@ class MLPRegressor(object):
         self.preds = self.y_hat
         self.loss = self._loss()
         #
-        # self.grads = tf.gradients(self.loss, tf.trainable_variables(), colocate_gradients_with_ops=True)
+        self.grads = tf.gradients(self.loss, tf.trainable_variables(), colocate_gradients_with_ops=True)
 
     def _model(self):
         default_args = {

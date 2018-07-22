@@ -15,7 +15,7 @@ from data.dataset import Dataset
 from data.gpsampler import GPSampler
 
 from models.mlp_regressor import MLPRegressor, mlp
-from learners.neural_process_learner import NPLearner
+from learners.maml_learner import MAMLLearner
 
 
 parser = argument_parser()
@@ -47,7 +47,7 @@ for i in range(args.nr_model):
         model(models[i], **model_opt)
 
 save_dir = "/data/ziz/jxu/maml/test"
-learner = NPLearner(session=None, parallel_models=models, optimize_op=None, train_set=train_set, eval_set=val_set, variables=tf.trainable_variables(), lr=args.learning_rate, device_type=args.device_type, save_dir=save_dir)
+learner = MAMLLearner(session=None, parallel_models=models, optimize_op=None, train_set=train_set, eval_set=val_set, variables=tf.trainable_variables(), lr=args.learning_rate, device_type=args.device_type, save_dir=save_dir)
 
 
 initializer = tf.global_variables_initializer()

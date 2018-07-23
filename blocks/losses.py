@@ -4,6 +4,11 @@ from tensorflow.contrib.framework.python.ops import arg_scope, add_arg_scope
 from blocks.helpers import log_prob_from_logits, int_shape, get_name, log_sum_exp
 flatten = tf.contrib.layers.flatten
 
+
+@add_arg_scope
+def sum_squared_error(labels, predictions):
+    return tf.reduce_sum(tf.pow((labels - predictions), 2), axis=0)
+
 @add_arg_scope
 def bernoulli_loss(x, l, sum_all=True):
     xs = int_shape(x)

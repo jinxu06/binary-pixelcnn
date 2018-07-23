@@ -109,7 +109,7 @@ class NPLearner(Learner):
             ax.scatter(X_c_value[:,0], y_c_value)
             #ax.plot(*sort_x(X_value[:,0], y_value), "+")
             for k in range(20):
-                X_eval = np.linspace(-2., 2., num=100)[:,None]
+                X_eval = np.linspace(self.eval_set.input_range[0], self.eval_set.input_range[1], num=100)[:,None]
                 y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval)
                 ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
                 #ax.plot(X_value[:,0], y_hat, "-", color='gray', alpha=0.3)

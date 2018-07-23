@@ -36,6 +36,7 @@ models = [MLPRegressor(counters={}) for i in range(args.nr_model)]
 model_opt = {
     "mlp": mlp,
     "obs_shape": [1],
+    "alpha": 0.01, 
     "nonlinearity": tf.nn.relu,
     "bn": False,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(uniform=False),

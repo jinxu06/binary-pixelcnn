@@ -14,10 +14,11 @@ class MLPRegressor(object):
     def __init__(self, counters={}):
         self.counters = counters
 
-    def construct(self, mlp, obs_shape, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
+    def construct(self, mlp, obs_shape, alpha=0.01, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
         #
         self.mlp = mlp
         self.obs_shape = obs_shape
+        self.alpha = alpha
         self.nonlinearity = nonlinearity
         self.bn = bn
         self.kernel_initializer = kernel_initializer
@@ -53,7 +54,7 @@ class MLPRegressor(object):
             for k in range(1):
                 loss = tf.losses.mean_squared_error(labels=self.y_c, predictions=y_hat)
                 grads = tf.gradients(loss, vars, colocate_gradients_with_ops=True)
-                vars = [v - 0.1 * g for v, g in zip(vars, grads)]
+                vars = [v - self.alpha * g for v, g in zip(vars, grads)]
                 y_hat = self.mlp(self.X_c, scope='mlp-{0}'.format(k), params=vars.copy())
             y_hat_test = self.mlp(self.X_t, scope='mlp-test', params=vars.copy())
             return y_hat_test

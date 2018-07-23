@@ -18,7 +18,7 @@ class DistortedSinusoid(object):
         samples_noise = self.noise_generator.sample(num)
         samples = []
         for i in range(num):
-            samples.append(DistortedSineWave(samples_sinusoid, samples_noise, self.noise_level, self.input_range))
+            samples.append(DistortedSineWave(samples_sinusoid[i], samples_noise[i], self.noise_level, self.input_range))
         return samples
 
 
@@ -35,7 +35,7 @@ class DistortedSineWave(object):
     def sample(self, num_samples):
         xs, ys_noise = self.samples_noise.sample(num_samples)
         _, ys_sinusoid = self.samples_sinusoid.sample(num_samples, xs=xs)
-        ys = ys_sinusoid + ys_noise * self.noise_level 
+        ys = ys_sinusoid + ys_noise * self.noise_level
         return xs, ys
 
     def get_all_samples(self):

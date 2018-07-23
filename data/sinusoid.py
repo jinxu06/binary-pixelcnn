@@ -48,9 +48,10 @@ class SineWave(object):
         if xs is None:
             xs = np.random.uniform(self.input_range[0], self.input_range[1], [num_samples,1])
         ys = self.amp * np.sin( 2*np.pi*(xs[:, 0] - self.phase) / self.period )
-        p = np.random.permutation(num_samples)
-        xs = xs[p]
-        ys = ys[p]
+        if xs is None:
+            p = np.random.permutation(num_samples)
+            xs = xs[p]
+            ys = ys[p]
         return xs, ys
 
     def get_all_samples(self):

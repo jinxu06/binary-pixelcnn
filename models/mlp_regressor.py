@@ -52,7 +52,7 @@ class MLPRegressor(object):
             y_hat = self.mlp(self.X_c, scope='mlp')
             vars = get_trainable_variables(['mlp'])
             inner_iters = 1
-            eval_iters = 5
+            eval_iters = 10
             y_hat_test_arr = []
             for k in range(1, max(inner_iters, eval_iters)+1):
                 loss = tf.losses.mean_squared_error(labels=self.y_c, predictions=y_hat)
@@ -79,7 +79,7 @@ class MLPRegressor(object):
         if step is None:
             preds= sess.run(self.preds, feed_dict=feed_dict)
         else:
-            preds= sess.run(self.eval_ops[step], feed_dict=feed_dict)
+            preds= sess.run(self.eval_ops[step-1], feed_dict=feed_dict)
         return preds
 
 

@@ -98,9 +98,12 @@ class MAMLLearner(Learner):
             X_eval = np.linspace(self.eval_set.input_range[0], self.eval_set.input_range[1], num=100)[:,None]
             # step 1
             y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=1)
-            ax.plot(X_eval[:,0], y_hat, "--", color='gray', alpha=0.3)
+            ax.plot(X_eval[:,0], y_hat, ":", color='gray', alpha=0.3)
             # step 5
             y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=5)
+            ax.plot(X_eval[:,0], y_hat, "--", color='gray', alpha=0.3)
+            # step 10
+            y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=10)
             ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
 
         fig.savefig("figs/maml-{0}-{1}.pdf".format(self.eval_set.dataset_name, epoch))

@@ -77,8 +77,8 @@ class NeuralProcessMAML(object):
                     loss = sum_squared_error(labels=self.y_c, predictions=y_hat)
                     grads = tf.gradients(loss, vars, colocate_gradients_with_ops=True)
                     vars = [v - self.alpha * g for v, g in zip(vars, grads)]
-                    y_hat = self.mlp(self.X_c, scope='mlp-{0}'.format(k), params=vars.copy())
-                    y_hat_test = self.mlp(self.X_t, scope='mlp-test-{0}'.format(k), params=vars.copy())
+                    y_hat = self.conditional_decoder(self.X_t, z, params=vars.copy())
+                    y_hat_test = self.conditional_decoder(self.X_c, z, params=vars.copy())
                     y_hat_test_arr.append(y_hat_test)
                 self.eval_ops = y_hat_test_arr
                 return y_hat_test_arr[inner_iters]

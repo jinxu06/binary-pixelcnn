@@ -129,11 +129,6 @@ class NeuralProcessMAML(object):
         l = sess.run(self.loss, feed_dict=feed_dict)
         return l
 
-if params is not None:
-    outputs = dense(outputs, 1, nonlinearity=None, W=params.pop(), b=params.pop())
-else:
-    outputs = dense(outputs, 1, nonlinearity=None)
-
 
 from blocks.layers_beta import dense
 @add_arg_scope

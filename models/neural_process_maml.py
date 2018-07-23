@@ -68,7 +68,7 @@ class NeuralProcessMAML(object):
                 z = (1-self.use_z_ph) * z + self.use_z_ph * self.z_ph
 
                 # add maml ops
-                y_hat = self.conditional_decoder(self.X_t, z)
+                y_hat = self.conditional_decoder(self.X_c, z)
                 vars = get_trainable_variables(['conditional_decoder'])
                 inner_iters = 1
                 eval_iters = 10
@@ -77,8 +77,8 @@ class NeuralProcessMAML(object):
                     loss = sum_squared_error(labels=self.y_c, predictions=y_hat)
                     grads = tf.gradients(loss, vars, colocate_gradients_with_ops=True)
                     vars = [v - self.alpha * g for v, g in zip(vars, grads)]
-                    y_hat = self.conditional_decoder(self.X_t, z, params=vars.copy())
-                    y_hat_test = self.conditional_decoder(self.X_c, z, params=vars.copy())
+                    y_hat = self.conditional_decoder(self.X_c, z, params=vars.copy())
+                    y_hat_test = self.conditional_decoder(self.X_t, z, params=vars.copy())
                     y_hat_test_arr.append(y_hat_test)
                 self.eval_ops = y_hat_test_arr
                 return y_hat_test_arr[inner_iters]
@@ -90,7 +90,7 @@ class NeuralProcessMAML(object):
         self.nll = sum_squared_error(labels=self.y_t, predictions=self.y_hat)
         return self.nll / (2*y_sigma**2) + beta * self.reg
 
-    def predict(self, sess, X_c_value, y_c_value, X_t_value):
+    def predict(self, sess, X_c_value, y_c_value, X_t_value, step=None):
         feed_dict = {
             self.X_c: X_c_value,
             self.y_c: y_c_value,
@@ -105,8 +105,12 @@ class NeuralProcessMAML(object):
             self.use_z_ph: True,
             self.z_ph: z_pr,
         })
-        preds= sess.run(self.preds, feed_dict=feed_dict)
+        if step is None:
+            preds= sess.run(self.preds, feed_dict=feed_dict)
+        else:
+            preds= sess.run(self.eval_ops[step-1], feed_dict=feed_dict)
         return preds
+
 
     def manipulate_z(self, sess, z_value, X_t_value):
         feed_dict = {

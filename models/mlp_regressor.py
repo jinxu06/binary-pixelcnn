@@ -51,19 +51,24 @@ class MLPRegressor(object):
         with arg_scope([self.mlp], **default_args):
             y_hat = self.mlp(self.X_c, scope='mlp')
             vars = get_trainable_variables(['mlp'])
-            for k in range(1):
+            inner_iters = 1
+            eval_iters = 5
+            y_hat_test_arr = []
+            for k in range(1, max(inner_iters, eval_iters)+1):
                 loss = tf.losses.mean_squared_error(labels=self.y_c, predictions=y_hat)
                 grads = tf.gradients(loss, vars, colocate_gradients_with_ops=True)
                 vars = [v - self.alpha * g for v, g in zip(vars, grads)]
                 y_hat = self.mlp(self.X_c, scope='mlp-{0}'.format(k), params=vars.copy())
-            y_hat_test = self.mlp(self.X_t, scope='mlp-test', params=vars.copy())
-            return y_hat_test
+                y_hat_test = self.mlp(self.X_t, scope='mlp-test-{0}'.format(k), params=vars.copy())
+                y_hat_test_arr.append(y_hat_test)
+            self.eval_ops = y_hat_test_arr
+            return y_hat_test_arr[inner_iters]
 
     def _loss(self):
         return tf.losses.mean_squared_error(labels=self.y_t, predictions=self.preds)
 
 
-    def predict(self, sess, X_c_value, y_c_value, X_t_value):
+    def predict(self, sess, X_c_value, y_c_value, X_t_value, step=None):
         feed_dict = {
             self.X_c: X_c_value,
             self.y_c: y_c_value,
@@ -71,7 +76,10 @@ class MLPRegressor(object):
             self.y_t: np.zeros((X_t_value.shape[0],)),
             self.is_training: False,
         }
-        preds= sess.run(self.preds, feed_dict=feed_dict)
+        if step is None:
+            preds= sess.run(self.preds, feed_dict=feed_dict)
+        else:
+            preds= sess.run(self.eval_ops[step], feed_dict=feed_dict)
         return preds
 
 

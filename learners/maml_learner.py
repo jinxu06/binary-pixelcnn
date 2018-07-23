@@ -93,12 +93,16 @@ class MAMLLearner(Learner):
             X_gt, y_gt = sampler.get_all_samples()
             ax.plot(*sort_x(X_gt[:,0], y_gt), "-")
             ax.scatter(X_c_value[:,0], y_c_value)
-            #ax.plot(*sort_x(X_value[:,0], y_value), "+")
-            for k in range(1):
-                X_eval = np.linspace(self.eval_set.input_range[0], self.eval_set.input_range[1], num=100)[:,None]
-                y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval)
-                ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
-                #ax.plot(X_value[:,0], y_hat, "-", color='gray', alpha=0.3)
+
+
+            X_eval = np.linspace(self.eval_set.input_range[0], self.eval_set.input_range[1], num=100)[:,None]
+            # step 1
+            y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=1)
+            ax.plot(X_eval[:,0], y_hat, "--", color='gray', alpha=0.3)
+            # step 5
+            y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=5)
+            ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
+
         fig.savefig("figs/maml-{0}-{1}.pdf".format(self.eval_set.dataset_name, epoch))
         plt.close()
 

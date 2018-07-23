@@ -23,7 +23,11 @@ if args.dataset_name == 'gpsamples':
     val_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=val_data)
 elif args.dataset_name == 'sinusoid':
     from data.sinusoid import Sinusoid
-    train_set = Sinusoid(amp_range=[0.1, 5.0], phase_range=[0, np.pi], period_range=[2*np.pi, 2*np.pi], input_range=[-5., 5.])
+    train_set = Sinusoid(amp_range=[0.1, 5.0], phase_range=[0, np.pi], period_range=[2*np.pi, 2*np.pi], input_range=[-5., 5.], dataset_name=args.dataset_name)
+    val_set = train_set
+elif args.dataset_name == 'sinusoid-var-period':
+    from data.sinusoid import Sinusoid
+    train_set = Sinusoid(amp_range=[0.1, 5.0], phase_range=[0, np.pi], period_range=[1*np.pi, 4*np.pi], input_range=[-5., 5.], dataset_name=args.dataset_name)
     val_set = train_set
 else:
     raise Exception("Dataset {0} not found".format(args.dataset_name))
@@ -36,7 +40,7 @@ models = [MLPRegressor(counters={}) for i in range(args.nr_model)]
 model_opt = {
     "mlp": mlp,
     "obs_shape": [1],
-    "alpha": 0.01, 
+    "alpha": 0.01,
     "nonlinearity": tf.nn.relu,
     "bn": False,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(uniform=False),

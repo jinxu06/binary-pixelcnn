@@ -5,8 +5,8 @@ import numpy as np
 
 class Sinusoid(object):
 
-    def __init__(self, amp_range, phase_range, period_range=[2*np.pi, 2*np.pi], input_range=[-5, 5]):
-        self.dataset_name = "sinusoid"
+    def __init__(self, amp_range, phase_range, period_range=[2*np.pi, 2*np.pi], input_range=[-5, 5], dataset_name="sinusoid"):
+        self.dataset_name = dataset_name
         self.amp_range = amp_range
         self.phase_range = phase_range
         self.period_range = period_range

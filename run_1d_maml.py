@@ -29,6 +29,18 @@ elif args.dataset_name == 'sinusoid-var-period':
     from data.sinusoid import Sinusoid
     train_set = Sinusoid(amp_range=[0.1, 5.0], phase_range=[0, np.pi], period_range=[1*np.pi, 4*np.pi], input_range=[-5., 5.], dataset_name=args.dataset_name)
     val_set = train_set
+elif args.dataset_name == 'distorted-sinusoid':
+    from data.distorted_sinusoid import DistortedSinusoid
+    from data.gpsampler import GPSampler
+    data = np.load("gpsamples_var05.npz")
+    train_data = {"xs":data['xs'][:50000], "ys":data['ys'][:50000]}
+    val_data = {"xs":data['xs'][50000:60000], "ys":data['ys'][50000:60000]}
+    train_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=train_data)
+    val_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=val_data)
+    from data.sinusoid import Sinusoid
+    sinusoid_set = Sinusoid(amp_range=[1., 5.0], phase_range=[0, np.pi], period_range=[0.4*np.pi, 0.8*np.pi], input_range=[-2., 2.])
+    train_set = DistortedSinusoid(sinusoid_set, train_set, noise_level=0.5, dataset_name=args.dataset_name)
+    val_set = DistortedSinusoid(sinusoid_set, val_set, noise_level=0.5, dataset_name=args.dataset_name)
 else:
     raise Exception("Dataset {0} not found".format(args.dataset_name))
 

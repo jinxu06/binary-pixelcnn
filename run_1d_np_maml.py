@@ -49,8 +49,7 @@ from learners.neural_process_maml_learner import NeuralProcessMAMLLearner
 
 models = [NeuralProcessMAML(counters={}) for i in range(args.nr_model)]
 
-from blocks.components import fc_encoder, aggregator
-from models.neural_process_maml import conditional_decoder
+from models.neural_process_maml import fc_encoder, aggregator, conditional_decoder
 
 model_opt = {
     "sample_encoder": fc_encoder,
@@ -59,7 +58,7 @@ model_opt = {
     "obs_shape": [1],
     "r_dim": 128,
     "z_dim": 32,
-    "alpha": 0.001,
+    "alpha": 0.0005,
     "nonlinearity": tf.nn.relu,
     "bn": False,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(uniform=False),

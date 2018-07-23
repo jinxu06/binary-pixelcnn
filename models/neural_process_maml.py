@@ -135,6 +135,41 @@ class NeuralProcessMAML(object):
 
 
 from blocks.layers_beta import dense
+
+@add_arg_scope
+def fc_encoder(X, y, r_dim, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False, counters={}):
+    inputs = tf.concat([X, y[:, None]], axis=1)
+    name = get_name("fc_encoder", counters)
+    print("construct", name, "...")
+    with tf.variable_scope(name):
+        with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
+            size = 256
+            outputs = dense(inputs, size)
+            outputs = nonlinearity(dense(outputs, size, nonlinearity=None) + dense(inputs, size, nonlinearity=None))
+            inputs = outputs
+            outputs = dense(outputs, size)
+            outputs = nonlinearity(dense(outputs, size, nonlinearity=None) + dense(inputs, size, nonlinearity=None))
+            outputs = dense(outputs, size)
+            outputs = dense(outputs, r_dim, nonlinearity=None, bn=False)
+            return outputs
+
+@add_arg_scope
+def aggregator(r, num_c, z_dim, method=tf.reduce_mean, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False, counters={}):
+    name = get_name("aggregator", counters)
+    print("construct", name, "...")
+    with tf.variable_scope(name):
+        with arg_scope([dense], nonlinearity=nonlinearity, bn=bn, kernel_initializer=kernel_initializer, kernel_regularizer=kernel_regularizer, is_training=is_training):
+            r_pr = method(r[:num_c], axis=0, keepdims=True)
+            r = method(r, axis=0, keepdims=True)
+            r = tf.concat([r_pr, r], axis=0)
+            size = 256
+            r = dense(r, size)
+            r = dense(r, size)
+            r = dense(r, size)
+            z_mu = dense(r, z_dim, nonlinearity=None, bn=False)
+            z_log_sigma_sq = dense(r, z_dim, nonlinearity=None, bn=False)
+            return z_mu[:1], z_log_sigma_sq[:1], z_mu[1:], z_log_sigma_sq[1:]
+            
 @add_arg_scope
 def conditional_decoder(x, z, params=None, nonlinearity=None, bn=True, kernel_initializer=None, kernel_regularizer=None, is_training=False, counters={}):
     name = get_name("conditional_decoder", counters)

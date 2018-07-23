@@ -110,7 +110,7 @@ class NeuralProcessMAMLLearner(Learner):
             #ax.plot(*sort_x(X_value[:,0], y_value), "+")
             for k in range(20):
                 X_eval = np.linspace(self.eval_set.input_range[0], self.eval_set.input_range[1], num=100)[:,None]
-                y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval)
+                y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=10)
                 ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
                 #ax.plot(X_value[:,0], y_hat, "-", color='gray', alpha=0.3)
         fig.savefig("figs/np-maml-{0}-{1}.pdf".format(self.eval_set.dataset_name, epoch))

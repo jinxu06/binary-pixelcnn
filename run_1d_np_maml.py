@@ -58,7 +58,7 @@ model_opt = {
     "obs_shape": [1],
     "r_dim": 128,
     "z_dim": 32,
-    "alpha": 0.0005,
+    "alpha": 0.0001,
     "nonlinearity": tf.nn.relu,
     "bn": False,
     "kernel_initializer": tf.contrib.layers.xavier_initializer(uniform=False),

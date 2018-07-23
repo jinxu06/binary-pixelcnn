@@ -39,8 +39,8 @@ elif args.dataset_name == 'distorted-sinusoid':
     val_set = GPSampler(input_range=[-2., 2.], var_range=[0.5, 0.5], max_num_samples=200, data=val_data)
     from data.sinusoid import Sinusoid
     sinusoid_set = Sinusoid(amp_range=[1., 5.0], phase_range=[0, np.pi], period_range=[0.4*np.pi, 0.8*np.pi], input_range=[-2., 2.])
-    train_set = DistortedSinusoid(sinusoid_set, train_set, noise_level=0.2, dataset_name=args.dataset_name)
-    val_set = DistortedSinusoid(sinusoid_set, val_set, noise_level=0.2, dataset_name=args.dataset_name)
+    train_set = DistortedSinusoid(sinusoid_set, train_set, noise_level=0.5, dataset_name=args.dataset_name)
+    val_set = DistortedSinusoid(sinusoid_set, val_set, noise_level=0.5, dataset_name=args.dataset_name)
 else:
     raise Exception("Dataset {0} not found".format(args.dataset_name))
 

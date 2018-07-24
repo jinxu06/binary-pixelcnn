@@ -129,7 +129,7 @@ class NPLearner(Learner):
             X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
             y_c_value, y_t_value = y_value[:num_shots], y_value[num_shots:]
             y_t_hat = m.predict(self.session, X_c_value, y_c_value, X_t_value)
-            evals.append(np.mean(np.pow(y_t_value - y_t_hat, 2)))
+            evals.append(np.mean(np.power(y_t_value - y_t_hat, 2)))
         eval = np.mean(evals)
         print(".......... EVAL: {} ............".format(eval))
 

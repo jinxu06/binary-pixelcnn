@@ -101,4 +101,4 @@ with tf.Session(config=config) as sess:
 
     # learner.run(**run_params)
 
-    learner.run_eval(num_func=10, num_shots=5, num_shots=50)
+    learner.run_eval(num_func=10, num_shots=5, test_shots=50)

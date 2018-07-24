@@ -130,6 +130,7 @@ class NeuralProcessMAMLLearner(Learner):
             y_c_value, y_t_value = y_value[:num_shots], y_value[num_shots:]
             y_t_hat = m.predict(self.session, X_c_value, y_c_value, X_t_value, step=10)
             evals.append(np.mean(np.power(y_t_value - y_t_hat, 2)))
+        evals = evals[np.logical_not(np.isnan(evals))]
         eval = np.mean(evals)
         print(".......... EVAL : num_func {0} num_shots {1} test_shots {2}............".format(num_func, num_shots, test_shots))
         print("\t{0}".format(eval))

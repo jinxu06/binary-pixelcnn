@@ -117,6 +117,7 @@ class NPLearner(Learner):
         plt.close()
 
     def run_eval(self, num_func, num_shots=1, test_shots=50):
+        m = self.parallel_models[0]
         saver = tf.train.Saver(var_list=self.variables)
         ckpt_file = self.save_dir + '/params.ckpt'
         print('restoring parameters from', ckpt_file)

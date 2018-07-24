@@ -18,6 +18,7 @@ def argument_parser():
     parser.add_argument('--gpus', help='IDs of GPUs used', default='0')
     parser.add_argument('--output_dir', help='output directory', default='')
     parser.add_argument('--checkpoint_dir', help='checkpoint directory', default='')
+    parser.add_argument('--user_mode', help='user mode', default='train') # train | eval 
 
     parser.add_argument('--debug', help='', action='store_true', default=False)
     parser.add_argument('--save_interval', type=int, default=10, help='Every how many epochs to write checkpoint/samples?')

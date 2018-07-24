@@ -99,4 +99,10 @@ with tf.Session(config=config) as sess:
         "test_shots": 10,
         "load_params": args.load_params,
     }
-    learner.run(**run_params)
+    if args.user_mode == 'train':
+        learner.run(**run_params)
+    elif args.user_mode == 'eval':
+        learner.run_eval(num_func=1000, num_shots=1, test_shots=50)
+        learner.run_eval(num_func=1000, num_shots=5, test_shots=50)
+        learner.run_eval(num_func=1000, num_shots=10, test_shots=50)
+        learner.run_eval(num_func=1000, num_shots=20, test_shots=50)

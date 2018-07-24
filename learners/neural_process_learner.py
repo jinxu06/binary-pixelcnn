@@ -131,7 +131,8 @@ class NPLearner(Learner):
             y_t_hat = m.predict(self.session, X_c_value, y_c_value, X_t_value)
             evals.append(np.mean(np.power(y_t_value - y_t_hat, 2)))
         eval = np.mean(evals)
-        print(".......... EVAL: {} ............".format(eval))
+        print(".......... EVAL : num_func {0} num_shots {1} test_shots {2}............".format(num_func, num_shots, test_shots))
+        print("\t{0}".format(eval))
 
 
     def run(self, num_epoch, eval_interval, save_interval, eval_samples, meta_batch, num_shots, test_shots, load_params=False):

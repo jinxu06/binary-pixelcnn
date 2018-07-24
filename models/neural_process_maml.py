@@ -14,8 +14,9 @@ from blocks.estimators import compute_2gaussian_kld
 
 class NeuralProcessMAML(object):
 
-    def __init__(self, counters={}):
+    def __init__(self, counters={}, user_mode='train'):
         self.counters = counters
+        self.user_mode = user_mode
 
     def construct(self, sample_encoder, aggregator, conditional_decoder, obs_shape, r_dim, z_dim, alpha=0.01, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
         #
@@ -64,7 +65,12 @@ class NeuralProcessMAML(object):
                 r_ct = self.sample_encoder(X_ct, y_ct, self.r_dim)
 
                 self.z_mu_pr, self.z_log_sigma_sq_pr, self.z_mu_pos, self.z_log_sigma_sq_pos = self.aggregator(r_ct, num_c, self.z_dim)
-                z = gaussian_sampler(self.z_mu_pos, tf.exp(0.5*self.z_log_sigma_sq_pos))
+                if self.user_mode == 'train':
+                    z = gaussian_sampler(self.z_mu_pos, tf.exp(0.5*self.z_log_sigma_sq_pos))
+                elif self.user_mode == 'eval':
+                    z = self.z_mu_pos
+                else:
+                    raise Exception("unknown user_mode")
                 z = (1-self.use_z_ph) * z + self.use_z_ph * self.z_ph
 
                 # add maml ops

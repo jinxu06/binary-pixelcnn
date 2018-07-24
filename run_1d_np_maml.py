@@ -47,7 +47,7 @@ else:
 from models.neural_process_maml import NeuralProcessMAML
 from learners.neural_process_maml_learner import NeuralProcessMAMLLearner
 
-models = [NeuralProcessMAML(counters={}) for i in range(args.nr_model)]
+models = [NeuralProcessMAML(counters={}, user_mode=args.user_mode) for i in range(args.nr_model)]
 
 from models.neural_process_maml import fc_encoder, aggregator, conditional_decoder
 

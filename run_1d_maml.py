@@ -47,7 +47,7 @@ else:
 from models.mlp_regressor import MLPRegressor, mlp
 from learners.maml_learner import MAMLLearner
 
-models = [MLPRegressor(counters={}) for i in range(args.nr_model)]
+models = [MLPRegressor(counters={}, user_mode=args.user_mode) for i in range(args.nr_model)]
 
 model_opt = {
     "mlp": mlp,

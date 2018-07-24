@@ -11,8 +11,9 @@ from blocks.helpers import int_shape, broadcast_masks_tf, get_name, get_trainabl
 
 class MLPRegressor(object):
 
-    def __init__(self, counters={}):
+    def __init__(self, counters={}, user_mode='train'):
         self.counters = counters
+        self.user_mode = user_mode 
 
     def construct(self, mlp, obs_shape, alpha=0.01, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
         #

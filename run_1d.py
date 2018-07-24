@@ -47,7 +47,7 @@ else:
 from models.neural_processes import NeuralProcess
 from learners.neural_process_learner import NPLearner
 
-models = [NeuralProcess(counters={}) for i in range(args.nr_model)]
+models = [NeuralProcess(counters={}, user_mode=args.user_mode) for i in range(args.nr_model)]
 
 from blocks.components import fc_encoder, aggregator, conditional_decoder
 

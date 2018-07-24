@@ -116,6 +116,22 @@ class NeuralProcessMAMLLearner(Learner):
         fig.savefig("figs/np-maml-{0}-{1}.pdf".format(self.eval_set.dataset_name, epoch))
         plt.close()
 
+    def run_eval(self, num_func, num_shots=1, test_shots=50):
+        saver = tf.train.Saver(var_list=self.variables)
+        ckpt_file = self.save_dir + '/params.ckpt'
+        print('restoring parameters from', ckpt_file)
+        saver.restore(self.session, ckpt_file)
+        evals = []
+        for _ in range(num_func):
+            sampler = self.eval_set.sample(1)[0]
+            X_value, y_value = sampler.sample(num_shots+test_shots)
+            X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
+            y_c_value, y_t_value = y_value[:num_shots], y_value[num_shots:]
+            y_t_hat = m.predict(self.session, X_c_value, y_c_value, X_t_value, step=10)
+            evals.append(np.mean(np.pow(y_t_value - y_t_hat, 2)))
+        eval = np.mean(evals)
+        print(".......... EVAL: {} ............".format(eval))
+
 
     def run(self, num_epoch, eval_interval, save_interval, eval_samples, meta_batch, num_shots, test_shots, load_params=False):
         num_figures = 12

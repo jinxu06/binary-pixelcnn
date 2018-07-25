@@ -114,7 +114,7 @@ class NeuralProcessMAML(object):
         if step is None:
             preds= sess.run(self.preds, feed_dict=feed_dict)
         else:
-            preds= sess.run(self.eval_ops[step-1], feed_dict=feed_dict)
+            preds= sess.run(self.eval_ops[step], feed_dict=feed_dict)
         return preds
 
 

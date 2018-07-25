@@ -78,7 +78,7 @@ class NeuralProcessMAML(object):
                 vars = get_trainable_variables(['conditional_decoder'])
                 inner_iters = 1
                 eval_iters = 10
-                y_hat_test_arr = []
+                y_hat_test_arr = [self.conditional_decoder(self.X_t, z, params=vars.copy())]
                 for k in range(1, max(inner_iters, eval_iters)+1):
                     loss = sum_squared_error(labels=self.y_c, predictions=y_hat)
                     grads = tf.gradients(loss, vars, colocate_gradients_with_ops=True)

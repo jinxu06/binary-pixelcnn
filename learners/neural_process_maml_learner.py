@@ -134,6 +134,41 @@ class NeuralProcessMAMLLearner(Learner):
         print(".......... EVAL : num_func {0} num_shots {1} test_shots {2}............".format(num_func, num_shots, test_shots))
         print("\t{0}".format(eval))
 
+        fig = plt.figure(figsize=(10,10))
+        for i in range(12):
+            ax = fig.add_subplot(4,3,i+1)
+            sampler = self.eval_set.sample(1)[0]
+            c = [1, 4, 8, 16, 32, 64]
+            num_shots = c[(i%6)]
+
+            X_value, y_value = sampler.sample(num_shots+test_shots)
+            X_c_value, X_t_value = X_value[:num_shots], X_value[num_shots:]
+            y_c_value, y_t_value = y_value[:num_shots], y_value[num_shots:]
+            X_gt, y_gt = sampler.get_all_samples()
+            ax.plot(*sort_x(X_gt[:,0], y_gt), "-")
+            ax.scatter(X_c_value[:,0], y_c_value)
+
+            X_eval = np.linspace(self.eval_set.input_range[0], self.eval_set.input_range[1], num=100)[:,None]
+
+            # step 1
+            y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=1)
+            ax.plot(X_eval[:,0], y_hat, ":", color='blue', alpha=0.3)
+            # step 1
+            y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=1)
+            ax.plot(X_eval[:,0], y_hat, ":", color='gray', alpha=0.3)
+            # step 5
+            y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=5)
+            ax.plot(X_eval[:,0], y_hat, "--", color='gray', alpha=0.3)
+            # step 10
+            y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=10)
+            ax.plot(X_eval[:,0], y_hat, "-", color='gray', alpha=0.3)
+
+        fig.savefig("figs/np-maml-{0}-{1}.pdf".format(self.eval_set.dataset_name, "eval"))
+        plt.close()
+
+        X_eval = np.linspace(self.eval_set.input_range[0], self.eval_set.input_range[1], num=100)[:,None]
+
+
 
     def run(self, num_epoch, eval_interval, save_interval, eval_samples, meta_batch, num_shots, test_shots, load_params=False):
         num_figures = 12

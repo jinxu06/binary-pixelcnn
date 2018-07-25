@@ -39,4 +39,7 @@ class DistortedSineWave(object):
         return xs, ys
 
     def get_all_samples(self):
-        return self.sample(self.samples_noise.num_samples)
+        try:
+            return self.sample(self.samples_noise.num_samples)
+        except AttributeError:
+            return self.sample(200)

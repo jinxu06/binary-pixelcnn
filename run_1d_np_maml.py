@@ -44,11 +44,11 @@ elif args.dataset_name == 'distorted-sinusoid':
 elif args.dataset_name == 'harmonics':
     from data.distorted_sinusoid import DistortedSinusoid
     from data.sinusoid import Sinusoid
-    train_set = Sinusoid(amp_range=[0.1, 0.5], phase_range=[0, np.pi], period_range=[0.5*np.pi, 0.5*np.pi], input_range=[-2., 2.])
+    train_set = Sinusoid(amp_range=[0.2, 0.5], phase_range=[0, np.pi], period_range=[0.1*np.pi, 0.1*np.pi], input_range=[-2., 2.])
     val_set = train_set
     sinusoid_set = Sinusoid(amp_range=[1., 5.0], phase_range=[0, np.pi], period_range=[0.4*np.pi, 0.8*np.pi], input_range=[-2., 2.])
-    train_set = DistortedSinusoid(sinusoid_set, train_set, noise_level=0.5, dataset_name=args.dataset_name)
-    val_set = DistortedSinusoid(sinusoid_set, val_set, noise_level=0.5, dataset_name=args.dataset_name)
+    train_set = DistortedSinusoid(sinusoid_set, train_set, noise_level=1., dataset_name=args.dataset_name)
+    val_set = DistortedSinusoid(sinusoid_set, val_set, noise_level=1., dataset_name=args.dataset_name)
 else:
     raise Exception("Dataset {0} not found".format(args.dataset_name))
 

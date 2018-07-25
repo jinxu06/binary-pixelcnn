@@ -13,7 +13,7 @@ class MLPRegressor(object):
 
     def __init__(self, counters={}, user_mode='train'):
         self.counters = counters
-        self.user_mode = user_mode 
+        self.user_mode = user_mode
 
     def construct(self, mlp, obs_shape, alpha=0.01, nonlinearity=tf.nn.relu, bn=False, kernel_initializer=None, kernel_regularizer=None):
         #
@@ -54,7 +54,7 @@ class MLPRegressor(object):
             vars = get_trainable_variables(['mlp'])
             inner_iters = 1
             eval_iters = 10
-            y_hat_test_arr = []
+            y_hat_test_arr = [self.mlp(self.X_t, scope='mlp-test-{0}'.format(0), params=vars.copy())]
             for k in range(1, max(inner_iters, eval_iters)+1):
                 loss = tf.losses.mean_squared_error(labels=self.y_c, predictions=y_hat)
                 grads = tf.gradients(loss, vars, colocate_gradients_with_ops=True)
@@ -80,7 +80,7 @@ class MLPRegressor(object):
         if step is None:
             preds= sess.run(self.preds, feed_dict=feed_dict)
         else:
-            preds= sess.run(self.eval_ops[step-1], feed_dict=feed_dict)
+            preds= sess.run(self.eval_ops[step], feed_dict=feed_dict)
         return preds
 
 

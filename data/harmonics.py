@@ -33,7 +33,7 @@ class JXHarmonicWave(object):
     def sample(self, num_samples):
         mu_x = np.random.uniform(-4., 4.)
         xs = np.random.normal(mu_x, 2.0, size=(num_samples,1))
-        ys = a1 * np.sin(omiga * xs + b1) + a2 * np.sin(2.*omiga * xs + b2)
+        ys = self.a1 * np.sin(self.omiga * xs + self.b1) + self.a2 * np.sin(2.*self.omiga * xs + self.b2)
         return xs, ys
 
     def get_all_samples(self):

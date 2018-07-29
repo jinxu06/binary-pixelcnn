@@ -5,7 +5,7 @@ import numpy as np
 
 class JXHarmonics(object):
 
-    def __init__(self, input_range=[-6., 6.], dataset_name="jxharmonics"):
+    def __init__(self, input_range=[-10., 10.], dataset_name="jxharmonics"):
         self.dataset_name = dataset_name
         self.input_range = input_range
 

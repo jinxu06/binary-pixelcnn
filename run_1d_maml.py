@@ -49,6 +49,10 @@ elif args.dataset_name == 'harmonics':
     sinusoid_set = Sinusoid(amp_range=[1., 5.0], phase_range=[0, np.pi], period_range=[0.4*np.pi, 0.8*np.pi], input_range=[-2., 2.])
     train_set = DistortedSinusoid(sinusoid_set, train_set, noise_level=1., dataset_name=args.dataset_name)
     val_set = DistortedSinusoid(sinusoid_set, val_set, noise_level=1., dataset_name=args.dataset_name)
+elif args.dataset_name == 'jxharmonics':
+    from data.harmonics import JXHarmonics
+    train_set = JXHarmonics()
+    val_set = train_set 
 else:
     raise Exception("Dataset {0} not found".format(args.dataset_name))
 

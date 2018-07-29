@@ -150,8 +150,8 @@ class NeuralProcessMAMLLearner(Learner):
 
             X_eval = np.linspace(self.eval_set.input_range[0], self.eval_set.input_range[1], num=100)[:,None]
 
-            # step 1
-            y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=1)
+            # step 0
+            y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=0)
             ax.plot(X_eval[:,0], y_hat, ":", color='blue', alpha=0.3)
             # step 1
             y_hat = m.predict(self.session, X_c_value, y_c_value, X_eval, step=1)

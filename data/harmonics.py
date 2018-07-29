@@ -5,7 +5,7 @@ import numpy as np
 
 class JXHarmonics(object):
 
-    def __init__(self, input_range=[-10., 10.], dataset_name="jxharmonics"):
+    def __init__(self, input_range=[-6., 6.], dataset_name="jxharmonics"):
         self.dataset_name = dataset_name
         self.input_range = input_range
 
@@ -37,4 +37,6 @@ class JXHarmonicWave(object):
         return xs[:, None], ys
 
     def get_all_samples(self):
-        return self.sample(200)
+        xs = np.random.uniform(-6., 6., size=500)
+        ys = self.a1 * np.sin(self.omiga * xs + self.b1) + self.a2 * np.sin(2.*self.omiga * xs + self.b2)
+        return xs[:, None], ys
